@@ -1,9 +1,10 @@
 # Craving Control
 
-A small personal site for cutting down on junk food. It has two tabs:
+A small personal site for cutting down on junk food and keeping an eye on money. It has three tabs:
 
 - **Craving flowchart** – an interactive decision chart for my top 10 junk foods from the expense sheet (biryani, Popeyes/KFC, Maggi, Burger King, nuggets, ice cream, Nutella, brownies & cookies, pizza, Sunny D). Each craving gets six better options, best match first: tilapia, shrimp, chicken breast or an omelette for the savory ones; blueberry Greek yogurt, a protein shake, frozen banana or grapes, strawberries or oranges for the sweet ones; and a Great Value electrolyte drink for Sunny D. It walks you through one "is it available?" question at a time and shows what giving in would cost, including how many times you've bought it.
 - **Monthly trends** – charts built from my expense sheet: which unhealthy foods I buy most, how many calories they add up to, and how that changes month by month.
+- **Finances** – from my first paycheck (February 2026) on: income (salary + tuition), expenses paid from salary, money sent to India, investments, and how much was saved each month and in total.
 
 **Live site:** https://gauthiii.github.io/weight_flowchart/
 
@@ -25,25 +26,37 @@ The same summary is saved as [junk_food_summary.md](junk_food_summary.md).
 ```
 Google Sheet ──► update_sheet.py ──► data/expenses.csv       (full sheet export)
                                  ├─► data/junk_food.js       (data the trends tab loads)
+                                 ├─► data/finance.js         (data the finances tab loads)
                                  └─► junk_food_summary.md    (summary table + notes)
 ```
 
 A GitHub Action ([.github/workflows/update-and-deploy.yml](.github/workflows/update-and-deploy.yml)) runs on every push to `main`, once a day, and on demand. Each run:
 
 1. runs `update_sheet.py` to pull the latest sheet,
-2. commits the refreshed CSV, data file and summary back to `main` (only if something changed),
-3. deploys `index.html` and `data/junk_food.js` to GitHub Pages.
+2. commits the refreshed CSV, data files and summary back to `main` (only if something changed),
+3. deploys `index.html`, `data/junk_food.js` and `data/finance.js` to GitHub Pages.
 
 Because the Action may add a commit after you push, run `git pull` before your next push.
+
+## Finances
+
+Built from three places in the sheet:
+
+- **Paychecks** – the `Date | Paycheck | …` table. Months not filled in there yet are counted from the "Biweekly n" entries in the earnings list (two paychecks a month from February 2026).
+- **Tuition** – the `Date | Tuition Salary` list, by payment date.
+- **Spending** – the main log, by date. Only rows paid from `Earnings` count; `To India` rows are money sent to India and `Investment` rows are investments. Expenses still paid from loan money aren't counted against savings.
+
+Saved = paychecks + tuition − expenses − sent to India − invested. A big transfer to India can make a month negative; the running total shows what's actually left.
 
 ## Files
 
 | File | What it is |
 |---|---|
-| `index.html` | The whole site: both tabs, styles and scripts in one file. No build step. |
+| `index.html` | The whole site: all three tabs, styles and scripts in one file. No build step. |
 | `update_sheet.py` | Downloads the sheet and regenerates the data files. Python standard library only. |
 | `data/expenses.csv` | The full sheet as exported by Google. |
 | `data/junk_food.js` | Generated. Monthly counts, spend and summary for the trends tab. |
+| `data/finance.js` | Generated. Monthly income, expenses, India transfers, investments and savings for the finances tab. |
 | `junk_food_summary.md` | Generated. The summary table, what stands out, how to read the numbers. |
 
 To change which items count as junk food or their calorie estimates, edit `CATEGORIES` in `update_sheet.py`.

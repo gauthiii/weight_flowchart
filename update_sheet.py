@@ -7,6 +7,7 @@ Writes:
   data/expenses.csv        the whole sheet, exactly as Google exports it
   data/junk_food.js        monthly data + summary for the "Monthly trends" tab in index.html
   junk_food_summary.md     the summary table, what stands out, and how to read the numbers
+  data/finance.js          monthly income, spending, savings and money sent to India for the "Finances" tab
 
 Uses only the Python standard library.
 """
@@ -26,6 +27,10 @@ ROOT = Path(__file__).resolve().parent
 CSV_PATH = ROOT / "data" / "expenses.csv"
 JS_PATH = ROOT / "data" / "junk_food.js"
 MD_PATH = ROOT / "junk_food_summary.md"
+FIN_PATH = ROOT / "data" / "finance.js"
+
+# First month of regular salary; the Finances tab starts here
+SALARY_START = date(2026, 2, 1)
 
 KCAL_PER_LB = 3500
 KG_PER_LB = 0.4536
@@ -158,7 +163,8 @@ def read_rows(text):
         # The log is in date order, so a date before the first row is a mistyped year (e.g. 30-Jan-2023 among Jan 2024 rows)
         while d < first:
             d = d.replace(year=d.year + 1)
-        rows.append({"date": d, "item": item, "cost": parse_cost(r.get("Cost") or "")})
+        rows.append({"date": d, "item": item, "cost": parse_cost(r.get("Cost") or ""),
+                     "mode": (r.get("Payment Mode") or "").strip(), "type": (r.get("Expense Type") or "").strip()})
     return rows
 
 
@@ -321,6 +327,130 @@ NOTES = [
 ]
 
 
+def find_cell(grid, text):
+    for r, row in enumerate(grid):
+        for c, v in enumerate(row):
+            if v.strip() == text:
+                return r, c
+    return None
+
+
+def parse_month(raw):
+    m = re.fullmatch(r"([A-Za-z]+)-(\d{4})", raw.strip())
+    if m and m.group(1)[:3].lower() in MONTHS:
+        return f"{m.group(2)}-{MONTHS[m.group(1)[:3].lower()]:02d}"
+    d = parse_date(raw.strip())
+    return month_key(d) if d else None
+
+
+def add_months(key, n):
+    y, m = map(int, key.split("-"))
+    m += n
+    return f"{y + (m - 1) // 12}-{(m - 1) % 12 + 1:02d}"
+
+
+def table_below(grid, header):
+    """Rows under a header cell whose left neighbour is a date: [(date text, value text)] until the date runs out."""
+    pos = find_cell(grid, header)
+    if not pos:
+        print(f"  note: no '{header}' table found in the sheet")
+        return []
+    r, c = pos
+    out = []
+    for row in grid[r + 1:]:
+        when = row[c - 1].strip() if len(row) > c else ""
+        if not when:
+            break
+        out.append((when, row[c].strip()))
+    return out
+
+
+def inferred_paychecks(grid):
+    """Month totals from the undated earnings list: two "Biweekly n" paychecks a month from SALARY_START.
+    Entries after a paycheck (like the tax withholding refund) count in that paycheck's month."""
+    head = grid[0]
+    amount_col, label_col = head.index("Earnings"), head.index("Earnings") + 1
+    start = month_key(SALARY_START)
+    totals, month = {}, None
+    for row in grid[1:]:
+        label = row[label_col].strip() if len(row) > label_col else ""
+        m = re.fullmatch(r"Biweekly (\d+)", label)
+        if m:
+            month = add_months(start, (int(m.group(1)) - 1) // 2)
+        if month and label:
+            totals[month] = totals.get(month, 0) + parse_cost(row[amount_col])
+    return totals
+
+
+def build_finance(text, rows):
+    grid = list(csv.reader(io.StringIO(text)))
+    start = month_key(SALARY_START)
+    last = max(r["date"] for r in rows)
+    months = []
+    k = start
+    while k <= month_key(last):
+        months.append(k)
+        k = add_months(k, 1)
+    f = {k: {"month": k, "paycheck": 0.0, "paycheckInferred": False, "tuition": 0.0, "expenses": 0.0,
+             "loanPaid": 0.0, "india": 0.0, "invested": 0.0} for k in months}
+
+    # Paychecks: your monthly Paycheck table where it's filled in, otherwise counted from the earnings list
+    entered = {}
+    for when, value in table_below(grid, "Paycheck"):
+        k = parse_month(when)
+        if k and value:
+            entered[k] = parse_cost(value)
+    inferred = inferred_paychecks(grid)
+    for k in months:
+        if k in entered:
+            f[k]["paycheck"] = entered[k]
+        elif inferred.get(k):
+            f[k]["paycheck"] = inferred[k]
+            f[k]["paycheckInferred"] = True
+
+    for when, value in table_below(grid, "Tuition Salary"):
+        d = parse_date(when)
+        if d and month_key(d) in f:
+            f[month_key(d)]["tuition"] += parse_cost(value)
+
+    # Spending from the main log, by the date it happened. Only salary-paid ("Earnings") rows reduce savings.
+    for r in rows:
+        k = month_key(r["date"])
+        if k not in f:
+            continue
+        if r["mode"] != "Earnings":
+            f[k]["loanPaid"] += r["cost"]
+        elif re.search(r"\bto india\b", r["item"], re.I):
+            f[k]["india"] += r["cost"]
+        elif r["type"] == "Investment":
+            f[k]["invested"] += r["cost"]
+        else:
+            f[k]["expenses"] += r["cost"]
+
+    out = []
+    for k in months:
+        m = f[k]
+        m["income"] = m["paycheck"] + m["tuition"]
+        m["saved"] = m["income"] - m["expenses"] - m["india"] - m["invested"]
+        out.append({key: round(v, 2) if isinstance(v, float) else v for key, v in m.items()})
+
+    total = lambda key: round(sum(m[key] for m in out), 2)
+    return {
+        "generated": date.today().isoformat(),
+        "start": start,
+        "asOf": last.isoformat(),
+        "months": out,
+        "totals": {key: total(key) for key in ("paycheck", "tuition", "income", "expenses", "loanPaid", "india", "invested", "saved")},
+    }
+
+
+def write_finance(data):
+    FIN_PATH.write_text(
+        "// Generated by update_sheet.py - do not edit by hand.\n"
+        f"window.FINANCE = {json.dumps(data, separators=(',', ':'))};\n", encoding="utf-8")
+    print(f"Saved {FIN_PATH.relative_to(ROOT)}")
+
+
 def write_js(data):
     JS_PATH.parent.mkdir(parents=True, exist_ok=True)
     body = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
@@ -374,9 +504,14 @@ def main():
     data = build(rows)
     write_js(data)
     write_md(data)
+    fin = build_finance(text, rows)
+    write_finance(fin)
     t = data["totals"]
     print(f"{t['n']} junk-food purchases, {money(t['spent'])}, ~{num(t['kcal'])} kcal "
           f"({data['first']} to {data['last']}).")
+    ft = fin["totals"]
+    print(f"Since {fin['start']}: income {money(ft['income'])}, saved {money(ft['saved'])}, "
+          f"sent to India {money(ft['india'])}, invested {money(ft['invested'])}.")
 
 
 if __name__ == "__main__":

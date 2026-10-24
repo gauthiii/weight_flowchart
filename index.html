@@ -396,11 +396,25 @@
   .tab-panel.enter { animation: slideIn 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
   /* Monthly trends: chart palette, validated for both themes */
-  :root { --g1: #2a78d6; --g2: #eb6834; --g3: #1baf7a; --g4: #eda100; --g5: #e87ba4; }
+  :root { --g1: #2a78d6; --g2: #eb6834; --g3: #1baf7a; --g4: #eda100; --g5: #e87ba4; --g7: #6250d6; }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) { --g1: #3987e5; --g2: #d95926; --g3: #199e70; --g4: #c98500; --g5: #d55181; }
+    :root:not([data-theme="light"]) { --g1: #3987e5; --g2: #d95926; --g3: #199e70; --g4: #c98500; --g5: #d55181; --g7: #9085e9; }
   }
-  :root[data-theme="dark"] { --g1: #3987e5; --g2: #d95926; --g3: #199e70; --g4: #c98500; --g5: #d55181; }
+  :root[data-theme="dark"] { --g1: #3987e5; --g2: #d95926; --g3: #199e70; --g4: #c98500; --g5: #d55181; --g7: #9085e9; }
+  .tab-sm { display: none; }
+
+  /* Finances */
+  .fin-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+  .fin-head .seg { padding: 4px; border-radius: 13px; }
+  .fin-head .seg button { height: 32px; padding: 0 12px; font-size: 13px; border-radius: 10px; }
+  .fin-chart .bar, .fin-chart .dot { transition: opacity 0.2s ease; }
+  .fin-chart .dim { opacity: 0.35; }
+  .fin-chart .hair { stroke: var(--muted); stroke-width: 1; opacity: 0.6; }
+  .fin-chart .line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .fin-chart .dot { stroke: var(--surface-solid); stroke-width: 2; }
+  .fin-chart .end { fill: var(--text); font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fin-table .neg { color: var(--bad); }
+  .fin-table .mark { color: var(--muted); }
 
   .trends { max-width: 1180px; margin: 0 auto; padding: 0 16px 40px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
   .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
@@ -532,6 +546,12 @@
       font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
     }
     .tr-table tfoot tr { border-bottom: 0; }
+    .tr-table.fin-table tr { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tr-table.fin-table td:first-child { grid-column: 1 / -1; font-weight: 700; }
+    .tr-table.fin-table td:nth-child(2) { grid-column: auto; }
+    .tab-lg { display: none; }
+    .tab-sm { display: inline; }
+    .tabs-row .seg button svg { display: none; }
     .item-btn { align-items: flex-start; }
     .item-btn i { margin-top: 4px; }
   }
@@ -566,11 +586,15 @@
   <div class="seg" id="tabs" role="tablist" aria-label="Views">
     <button type="button" role="tab" id="tabBtn-flow" data-tab="flow" aria-controls="tab-flow" aria-selected="true">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/><path d="M6.5 10v4a3 3 0 0 0 3 3H14"/></svg>
-      Craving flowchart
+      <span class="tab-lg">Craving flowchart</span><span class="tab-sm">Flowchart</span>
     </button>
     <button type="button" role="tab" id="tabBtn-trends" data-tab="trends" aria-controls="tab-trends" aria-selected="false" tabindex="-1">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
-      Monthly trends
+      <span class="tab-lg">Monthly trends</span><span class="tab-sm">Trends</span>
+    </button>
+    <button type="button" role="tab" id="tabBtn-finances" data-tab="finances" aria-controls="tab-finances" aria-selected="false" tabindex="-1">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="14" rx="3"/><path d="M2 10h20M16 15h2"/><path d="M6 6V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1"/></svg>
+      Finances
     </button>
   </div>
 </div>
@@ -677,7 +701,69 @@
   </main>
 </div>
 
+<div class="tab-panel" id="tab-finances" role="tabpanel" aria-labelledby="tabBtn-finances" hidden>
+  <section class="hero">
+    <span class="eyebrow"><span class="pulse"></span>Since your first paycheck</span>
+    <h1>Where your <span class="grad">paychecks</span> go.</h1>
+    <p class="lede" id="finLede">Salary and tuition money, what you spent from it, what you sent to India, and what was left over each month.</p>
+  </section>
+
+  <main class="trends">
+    <div class="tiles" id="finTiles"></div>
+
+    <section class="card tr-card" aria-labelledby="finSavedTitle">
+      <div class="fin-head">
+        <div>
+          <h2 id="finSavedTitle">Money saved each month</h2>
+          <p class="tr-sub">Income minus salary-paid expenses, money sent to India and investments.</p>
+        </div>
+        <div class="seg" id="finSavedMode" role="group" aria-label="Savings view">
+          <button type="button" data-mode="month" aria-pressed="true">Each month</button>
+          <button type="button" data-mode="total" aria-pressed="false">Running total</button>
+        </div>
+      </div>
+      <div class="tr-legend" id="finSavedLegend">
+        <span><i style="background: var(--g1)"></i>Saved</span>
+        <span><i style="background: var(--g2)"></i>More went out than came in</span>
+      </div>
+      <div class="tr-chart fin-chart" id="finSaved"></div>
+    </section>
+
+    <section class="card tr-card" aria-labelledby="finIndiaTitle">
+      <h2 id="finIndiaTitle">Sent to India each month</h2>
+      <p class="tr-sub" id="finIndiaSub"></p>
+      <div class="tr-chart fin-chart" id="finIndia"></div>
+    </section>
+
+    <section class="card tr-card" aria-labelledby="finTableTitle">
+      <h2 id="finTableTitle">Month by month</h2>
+      <p class="tr-sub">Everything in dollars, rounded to the nearest dollar.</p>
+      <div class="table-wrap">
+        <table class="tr-table fin-table">
+          <thead>
+            <tr>
+              <th>Month</th><th class="num">Paycheck</th><th class="num">Tuition</th><th class="num">Expenses</th>
+              <th class="num">Sent to India</th><th class="num">Invested</th><th class="num">Saved</th><th class="num">Running total</th>
+            </tr>
+          </thead>
+          <tbody id="finRows"></tbody>
+          <tfoot id="finFoot"></tfoot>
+        </table>
+      </div>
+      <p class="fine" id="finFine"></p>
+    </section>
+
+    <section class="card tr-card" aria-labelledby="finNotesTitle">
+      <h2 id="finNotesTitle">How these numbers work</h2>
+      <ul class="points" id="finNotes"></ul>
+    </section>
+
+    <p class="tr-update" id="finUpdate">To pull the latest sheet, run <code>python3 update_sheet.py</code> in this folder and reload the page.</p>
+  </main>
+</div>
+
 <script src="data/junk_food.js"></script>
+<script src="data/finance.js"></script>
 <script>
 (() => {
   const D = window.JUNK_FOOD;
@@ -687,10 +773,11 @@
 
   /* Tabs */
   const tabBtns = [...$('tabs').querySelectorAll('[role="tab"]')];
-  const panels = { flow: $('tab-flow'), trends: $('tab-trends') };
+  const panels = { flow: $('tab-flow'), trends: $('tab-trends'), finances: $('tab-finances') };
   let tab = 'flow';
   try { const s = localStorage.getItem('craving-tab'); if (panels[s]) tab = s; } catch (e) {}
-  if (location.hash === '#trends') tab = 'trends';
+  const fromHash = location.hash.slice(1);
+  if (fromHash !== 'flow' && panels[fromHash]) tab = fromHash;
 
   function setTab(id, animate) {
     tab = id;
@@ -705,7 +792,7 @@
     }
     try { localStorage.setItem('craving-tab', id); } catch (e) {}
     // Only rewrite the hash when the user switches tabs: on load the flowchart still needs to read #<craving>
-    if (animate) try { history.replaceState(null, '', id === 'trends' ? '#trends' : location.pathname + location.search); } catch (e) {}
+    if (animate) try { history.replaceState(null, '', id === 'flow' ? location.pathname + location.search : '#' + id); } catch (e) {}
     if (id === 'trends' && D) renderChart();
   }
   tabBtns.forEach((b, i) => {
@@ -717,9 +804,9 @@
       setTab(next.dataset.tab, true);
     });
   });
-  // The flowchart script writes the craving into the hash on load, so restore #trends after it runs
+  // The flowchart script writes the craving into the hash on load, so restore #trends / #finances after it runs
   addEventListener('DOMContentLoaded', () => {
-    if (tab === 'trends') try { history.replaceState(null, '', '#trends'); } catch (e) {}
+    if (tab !== 'flow') try { history.replaceState(null, '', '#' + tab); } catch (e) {}
   });
 
   if (!D) {
@@ -1031,6 +1118,284 @@
   let raf = 0;
   new ResizeObserver(() => { cancelAnimationFrame(raf); raf = requestAnimationFrame(renderChart); }).observe(chartBox);
   setTab(tab, false);
+})();
+</script>
+<script>
+(() => {
+  const F = window.FINANCE;
+  const $ = (id) => document.getElementById(id);
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  if (!F) {
+    $('finTiles').hidden = true;
+    $('finSaved').innerHTML = '<p class="tr-empty">No data yet. Run <code>python3 update_sheet.py</code> in this folder, then reload.</p>';
+    return;
+  }
+
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const money = (v) => (Math.round(v) < 0 ? '−$' : '$') + Math.abs(Math.round(v)).toLocaleString('en-US');
+  const short = (v) => {
+    const a = Math.abs(v), s = v < 0 ? '−$' : '$';
+    return s + (a >= 1000 ? +(a / 1000).toFixed(1) + 'k' : String(Math.round(a)));
+  };
+  const ym = (k) => { const [y, m] = k.split('-'); return { y: +y, m: +m - 1 }; };
+  const isoDate = (s) => { const [y, m, d] = s.split('-'); return `${MONTHS[+m - 1]} ${+d}, ${y}`; };
+
+  const M = F.months;
+  const T = F.totals;
+  const asOf = ym(F.asOf.slice(0, 7));
+  const lastKey = M[M.length - 1].month;
+  // The current month is still in progress
+  const partial = (k) => k === lastKey && new Date(F.asOf + 'T00:00').getDate() < new Date(asOf.y, asOf.m + 1, 0).getDate();
+  const monthName = (k) => { const { y, m } = ym(k); return `${LONG[m]} ${y}` + (partial(k) ? ` (through ${isoDate(F.asOf).replace(/, \d+$/, '')})` : ''); };
+  let run = 0;
+  const running = M.map((m) => (run += m.saved));
+  const pct = (a, b) => (b ? Math.round((100 * a) / b) : 0);
+
+  /* Header and tiles */
+  const start = ym(F.start);
+  $('finLede').textContent = `Salary and tuition money from ${LONG[start.m]} ${start.y} to ${isoDate(F.asOf)}: what you spent from it, what you sent to India, and what was left over each month.`;
+  const tiles = [
+    { label: 'Earned', val: money(T.income), sub: `${money(T.paycheck)} paychecks + ${money(T.tuition)} tuition` },
+    { label: 'Sent to India', val: money(T.india), sub: `${pct(T.india, T.income)}% of everything you earned` },
+    { label: 'Invested', val: money(T.invested), sub: `${pct(T.invested, T.income)}% of what you earned` },
+    { label: 'Saved', val: money(T.saved), sub: `Left after ${money(T.expenses)} of expenses, India and investing` },
+  ];
+  for (const t of tiles) {
+    const el = document.createElement('div');
+    el.className = 'card tile';
+    el.innerHTML = '<div class="tile-label"></div><div class="tile-val"></div><div class="tile-sub"></div>';
+    el.querySelector('.tile-label').textContent = t.label;
+    el.querySelector('.tile-val').textContent = t.val;
+    el.querySelector('.tile-sub').textContent = t.sub;
+    $('finTiles').appendChild(el);
+  }
+  $('finIndiaSub').textContent = `${money(T.india)} in total since ${LONG[start.m]} ${start.y}, counted in the month it was sent.`;
+
+  /* Table */
+  const HEAD = [...document.querySelectorAll('.fin-table thead th')].map((th) => th.textContent);
+  const addRow = (parent, cells, negCols) => {
+    const tr = document.createElement('tr');
+    cells.forEach((c, j) => {
+      const td = document.createElement('td');
+      if (j > 0) { td.className = 'num'; td.dataset.label = HEAD[j]; }
+      if (negCols.includes(j)) td.classList.add('neg');
+      td.textContent = c;
+      tr.appendChild(td);
+    });
+    parent.appendChild(tr);
+  };
+  M.forEach((m, i) => {
+    const { y: yr, m: mo } = ym(m.month);
+    const label = `${MONTHS[mo]} ${yr}` + (partial(m.month) ? ' (so far)' : '');
+    const neg = [];
+    if (m.saved < 0) neg.push(6);
+    if (running[i] < 0) neg.push(7);
+    addRow($('finRows'), [
+      label, money(m.paycheck) + (m.paycheckInferred ? ' *' : ''), money(m.tuition), money(m.expenses),
+      money(m.india), money(m.invested), money(m.saved), money(running[i]),
+    ], neg);
+  });
+  addRow($('finFoot'), ['Total', money(T.paycheck), money(T.tuition), money(T.expenses), money(T.india), money(T.invested), money(T.saved), ''], T.saved < 0 ? [6] : []);
+  const inferred = M.filter((m) => m.paycheckInferred).map((m) => MONTHS[ym(m.month).m]);
+  const fine = [];
+  if (inferred.length) fine.push(`* ${inferred.join(' and ')} ${inferred.length > 1 ? "aren't" : "isn't"} in your Paycheck table yet, so the paycheck is counted from the "Biweekly" entries in your earnings list (two a month).`);
+  if (T.loanPaid) fine.push(`Expenses only count what was paid from salary. Another ${money(T.loanPaid)} was paid from loan money, mostly in ${MONTHS[start.m]}–May, and isn't counted.`);
+  $('finFine').textContent = fine.join(' ');
+
+  const notes = [
+    { title: 'Income', body: 'is your paychecks plus tuition money, from the "Tuition Salary" list in your sheet, by the date you were paid.' },
+    { title: 'Saved', body: 'is income minus expenses paid from salary, money sent to India, and investments. A negative month means more went out than came in, usually a big transfer to India paid from earlier months\' savings. The running total shows what is actually left.' },
+    { title: 'Sent to India', body: 'counts every "To India" row in the month it was sent, not the paycheck it came from, so it can differ from the India column in your own monthly table.' },
+    { title: 'Invested', body: 'is every row with the Investment type, such as stock purchases.' },
+  ];
+  for (const n of notes) {
+    const li = document.createElement('li');
+    const b = document.createElement('b');
+    b.textContent = n.title + ' ';
+    li.append(b, n.body);
+    $('finNotes').appendChild(li);
+  }
+  $('finUpdate').prepend(`Data last pulled ${isoDate(F.generated)}. `);
+
+  /* Charts: monthly bars that can go below zero, or a line */
+  const make = (tag, attrs, parent) => {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    if (parent) parent.appendChild(el);
+    return el;
+  };
+  // Rounded corners on the data end only: the top of a positive bar, the bottom of a negative one
+  const barPath = (x, y0, y1, w, r) => {
+    const h = Math.abs(y1 - y0);
+    r = Math.min(r, w / 2, h);
+    if (y1 <= y0) return `M${x},${y0}V${y1 + r}Q${x},${y1} ${x + r},${y1}H${x + w - r}Q${x + w},${y1} ${x + w},${y1 + r}V${y0}Z`;
+    return `M${x},${y0}V${y1 - r}Q${x},${y1} ${x + r},${y1}H${x + w - r}Q${x + w},${y1} ${x + w},${y1 - r}V${y0}Z`;
+  };
+  function niceScale(lo, hi) {
+    const span = Math.max(hi - lo, 1);
+    const raw = span / 4;
+    const p = 10 ** Math.floor(Math.log10(raw));
+    const step = [1, 2, 2.5, 5, 10].map((s) => s * p).find((s) => s >= raw);
+    return { step, top: Math.ceil(hi / step) * step, bottom: Math.floor(lo / step) * step };
+  }
+
+  function monthChart(box, opts) {
+    const svg = make('svg', { tabindex: 0, role: 'group', 'aria-label': opts.label + '. Use the left and right arrow keys to read each month.' }, box);
+    const tip = document.createElement('div');
+    tip.className = 'tip';
+    box.appendChild(tip);
+    let geo = null, active = null, marks = [];
+
+    function render() {
+      const W = box.clientWidth;
+      if (!W) return;
+      const { values, mode, color } = opts.series();
+      const H = W < 560 ? 220 : 260;
+      const { step, top, bottom } = niceScale(Math.min(0, ...values), Math.max(0, ...values));
+      const ticks = [];
+      for (let v = bottom; v <= top + 1e-9; v += step) ticks.push(v);
+      const ml = Math.max(...ticks.map((v) => short(v).length)) * 6.6 + 12;
+      const mt = 18, mb = 26, mr = mode === 'line' ? 44 : 4;
+      const pw = W - ml - mr, ph = H - mt - mb, n = values.length;
+      const band = pw / n;
+      const y = (v) => mt + ((top - v) / (top - bottom)) * ph;
+      geo = { ml, mt, band, W, ph, n };
+
+      svg.replaceChildren();
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      svg.setAttribute('height', H);
+      for (const v of ticks) {
+        make('line', { class: v === 0 ? 'baseline' : 'gridline', x1: ml, x2: W - mr, y1: y(v), y2: y(v) }, svg);
+        make('text', { class: 'axis', x: ml - 8, y: y(v), dy: '0.32em', 'text-anchor': 'end' }, svg).textContent = short(v);
+      }
+      const every = band >= 34 ? 1 : 2;
+      M.forEach((m, i) => {
+        if (i % every) return;
+        const { y: yr, m: mo } = ym(m.month);
+        const t = make('text', { class: 'axis', x: ml + (i + 0.5) * band, y: H - 6, 'text-anchor': 'middle' }, svg);
+        t.textContent = i === 0 || mo === 0 ? `${MONTHS[mo]} '${String(yr).slice(2)}` : MONTHS[mo];
+      });
+
+      marks = [];
+      if (mode === 'line') {
+        const pts = values.map((v, i) => [ml + (i + 0.5) * band, y(v)]);
+        make('path', { class: 'line', d: 'M' + pts.map((p) => p.join(',')).join('L'), stroke: color(0) }, svg);
+        geo.hair = make('line', { class: 'hair', y1: mt, y2: mt + ph, visibility: 'hidden' }, svg);
+        pts.forEach(([x, yy], i) => marks.push(make('circle', { class: 'dot', cx: x, cy: yy, r: 4, fill: color(values[i]) }, svg)));
+        const [lx, ly] = pts[pts.length - 1];
+        make('text', { class: 'end', x: lx + 8, y: ly, dy: '0.32em' }, svg).textContent = short(values[n - 1]);
+      } else {
+        const bw = Math.min(48, Math.max(4, band - Math.max(2, band * 0.32)));
+        values.forEach((v, i) => {
+          const x = ml + i * band + (band - bw) / 2;
+          marks.push(make('path', { class: 'bar', d: v ? barPath(x, y(0), y(v), bw, 4) : '', fill: color(v) }, svg));
+        });
+      }
+      setActive(active != null && document.activeElement === svg ? Math.min(active, n - 1) : null);
+    }
+
+    function setActive(i) {
+      active = i;
+      marks.forEach((mk, j) => mk.classList.toggle('dim', i != null && j !== i));
+      if (geo && geo.hair) {
+        geo.hair.setAttribute('visibility', i == null ? 'hidden' : 'visible');
+        if (i != null) { const x = geo.ml + (i + 0.5) * geo.band; geo.hair.setAttribute('x1', x); geo.hair.setAttribute('x2', x); }
+      }
+      if (i == null || !geo) { tip.classList.remove('show'); return; }
+      const t = opts.tip(i);
+      tip.replaceChildren();
+      const h = document.createElement('div');
+      h.className = 'tip-h';
+      h.textContent = monthName(M[i].month);
+      const tot = document.createElement('div');
+      tot.className = 'tip-total';
+      tot.textContent = t.value;
+      tip.append(h, tot);
+      for (const r of t.rows) {
+        const row = document.createElement('div');
+        row.className = 'tip-row';
+        const key = document.createElement('i');
+        if (r.color) key.style.background = r.color;
+        const b = document.createElement('b');
+        b.textContent = r.value;
+        const s = document.createElement('span');
+        s.textContent = r.label;
+        row.append(key, b, s);
+        tip.appendChild(row);
+      }
+      if (!t.rows.length) tot.style.marginBottom = '0';
+      const cx = geo.ml + (i + 0.5) * geo.band;
+      const tw = tip.offsetWidth;
+      let left = cx + 14;
+      if (left + tw > geo.W) left = cx - 14 - tw;
+      tip.style.left = Math.max(0, left) + 'px';
+      tip.style.top = geo.mt + 'px';
+      tip.classList.add('show');
+    }
+
+    const pick = (ev) => {
+      if (!geo) return;
+      const i = Math.floor((ev.clientX - svg.getBoundingClientRect().left - geo.ml) / geo.band);
+      if (i >= 0 && i < geo.n && i !== active) setActive(i);
+    };
+    svg.addEventListener('pointerdown', pick);
+    svg.addEventListener('pointermove', pick);
+    svg.addEventListener('pointerleave', (ev) => { if (ev.pointerType === 'mouse' && document.activeElement !== svg) setActive(null); });
+    document.addEventListener('pointerdown', (ev) => { if (active != null && !svg.contains(ev.target) && document.activeElement !== svg) setActive(null); });
+    svg.addEventListener('focus', () => setActive(active ?? M.length - 1));
+    svg.addEventListener('blur', () => setActive(null));
+    svg.addEventListener('keydown', (ev) => {
+      const last = M.length - 1;
+      let next = null;
+      if (ev.key === 'ArrowLeft') next = Math.max(0, (active ?? last) - 1);
+      else if (ev.key === 'ArrowRight') next = Math.min(last, (active ?? last) + 1);
+      else if (ev.key === 'Home') next = 0;
+      else if (ev.key === 'End') next = last;
+      else if (ev.key === 'Escape') { svg.blur(); return; }
+      if (next == null) return;
+      ev.preventDefault();
+      setActive(next);
+    });
+    let raf = 0;
+    new ResizeObserver(() => { cancelAnimationFrame(raf); raf = requestAnimationFrame(render); }).observe(box);
+    return { render };
+  }
+
+  const breakdown = (m) => [
+    { label: 'paycheck', value: money(m.paycheck) + (m.paycheckInferred ? ' *' : '') },
+    { label: 'tuition', value: money(m.tuition) },
+    { label: 'expenses', value: '−' + money(m.expenses) },
+    { label: 'sent to India', value: '−' + money(m.india), color: 'var(--g7)' },
+    { label: 'invested', value: '−' + money(m.invested) },
+  ];
+
+  let savedMode = 'month';
+  const savedChart = monthChart($('finSaved'), {
+    label: 'Money saved each month',
+    series: () => savedMode === 'month'
+      ? { mode: 'bar', values: M.map((m) => m.saved), color: (v) => (v < 0 ? 'var(--g2)' : 'var(--g1)') }
+      : { mode: 'line', values: running, color: () => 'var(--g1)' },
+    tip: (i) => savedMode === 'month'
+      ? { value: (M[i].saved < 0 ? 'Short by ' : 'Saved ') + money(Math.abs(M[i].saved)), rows: breakdown(M[i]) }
+      : { value: money(running[i]) + ' saved so far', rows: [{ label: 'this month', value: money(M[i].saved), color: M[i].saved < 0 ? 'var(--g2)' : 'var(--g1)' }] },
+  });
+  const modeBtns = [...$('finSavedMode').querySelectorAll('button')];
+  modeBtns.forEach((b) => b.addEventListener('click', () => {
+    savedMode = b.dataset.mode;
+    modeBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    $('finSavedTitle').textContent = savedMode === 'month' ? 'Money saved each month' : 'Total saved so far';
+    $('finSavedLegend').hidden = savedMode !== 'month';
+    savedChart.render();
+  }));
+
+  let sent = 0;
+  const sentSoFar = M.map((m) => (sent += m.india));
+  monthChart($('finIndia'), {
+    label: 'Money sent to India each month',
+    series: () => ({ mode: 'bar', values: M.map((m) => m.india), color: () => 'var(--g7)' }),
+    tip: (i) => ({ value: money(M[i].india) + ' sent', rows: [{ label: 'sent so far', value: money(sentSoFar[i]) }, { label: 'of income', value: pct(M[i].india, M[i].income) + '%' }] }),
+  });
 })();
 </script>
 <script>
