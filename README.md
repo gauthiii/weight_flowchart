@@ -2,7 +2,7 @@
 
 A small personal site for cutting down on junk food. It has two tabs:
 
-- **Craving flowchart** – an interactive decision chart for when a craving hits (biryani, Hershey's, Nutella). It walks you through a swap first (protein shake), then fallbacks (blueberry yogurt, strawberries, oranges), and shows what giving in would cost.
+- **Craving flowchart** – an interactive decision chart for my top 10 junk foods from the expense sheet (biryani, Popeyes/KFC, Maggi, Burger King, nuggets, ice cream, Nutella, brownies & cookies, pizza, Sunny D). Each craving gets six better options, best match first: tilapia, shrimp, chicken breast or an omelette for the savory ones; blueberry Greek yogurt, a protein shake, frozen banana or grapes, strawberries or oranges for the sweet ones; and a Great Value electrolyte drink for Sunny D. It walks you through one "is it available?" question at a time and shows what giving in would cost, including how many times you've bought it.
 - **Monthly trends** – charts built from my expense sheet: which unhealthy foods I buy most, how many calories they add up to, and how that changes month by month.
 
 **Live site:** https://gauthiii.github.io/weight_flowchart/

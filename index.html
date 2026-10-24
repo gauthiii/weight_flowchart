@@ -161,7 +161,7 @@
   /* Craving picker */
   .picker-label { display: block; margin-top: 26px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
   .picker {
-    position: relative; display: inline-flex; gap: 4px; padding: 5px; margin-top: 10px; max-width: 100%;
+    position: relative; display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 5px; margin-top: 10px; max-width: min(100%, 860px);
     border-radius: 16px; background: var(--surface); border: 1px solid var(--border);
     backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   }
@@ -175,10 +175,10 @@
   .picker .emoji { font-size: 17px; transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
   .picker button[aria-pressed="true"] .emoji { transform: scale(1.18) rotate(-6deg); }
   .picker .thumb {
-    position: absolute; z-index: 0; top: 5px; bottom: 5px; left: 0; border-radius: 12px;
+    position: absolute; z-index: 0; top: 0; left: 0; border-radius: 12px;
     background: var(--surface-solid); box-shadow: var(--shadow-sm); border: 1px solid var(--border);
   }
-  .picker .thumb.ready { transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .picker .thumb.ready { transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), height 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
   .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
   .btn {
@@ -215,14 +215,16 @@
   .flow {
     position: relative;
     display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-    column-gap: 64px; row-gap: 58px;
+    column-gap: 64px; row-gap: 52px;
     grid-template-areas:
-      ".        start   ."
-      ".        swap    loss"
-      "shake    protein ."
-      "yogWin   yog     ."
-      "strawWin straw   ."
-      ".        oranges .";
+      ".    start ."
+      ".    swap  loss"
+      "alt1 ask1  ."
+      "alt2 ask2  ."
+      "alt3 ask3  ."
+      "alt4 ask4  ."
+      "alt5 ask5  ."
+      ".    alt6  .";
   }
   .wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 0; }
   .labels { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
@@ -487,12 +489,14 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       column-gap: 30px; row-gap: 48px;
       grid-template-areas:
-        "start   ."
-        "swap    loss"
-        "protein shake"
-        "yog     yogWin"
-        "straw   strawWin"
-        "oranges .";
+        "start ."
+        "swap  loss"
+        "ask1  alt1"
+        "ask2  alt2"
+        "ask3  alt3"
+        "ask4  alt4"
+        "ask5  alt5"
+        "alt6  .";
     }
     .node { flex-direction: column; gap: 8px; padding: 12px; border-radius: 16px; }
     .node-icon { width: 34px; height: 34px; font-size: 17px; border-radius: 10px; }
@@ -543,8 +547,8 @@
 <section class="hero">
   <span class="eyebrow"><span class="pulse"></span>Your craving playbook</span>
   <h1>Craving <span class="swap-text" id="cravingName">biryani</span>? <span class="grad">Follow the chart.</span></h1>
-  <p class="lede">Swap first, fall back to yogurt or fruit, and see exactly what giving in would cost you. Walk through it one question at a time whenever the craving shows up.</p>
-  <span class="picker-label" id="pickerLabel">What's the craving?</span>
+  <p class="lede">Pick what you're craving. Each one has six better options, best match first, and the chart shows what giving in would cost you. Walk through it one question at a time whenever the craving shows up.</p>
+  <span class="picker-label" id="pickerLabel">What's the craving? Your top 10 from the expense sheet</span>
   <div class="picker" id="picker" role="group" aria-labelledby="pickerLabel">
     <span class="thumb" id="thumb" aria-hidden="true"></span>
   </div>
@@ -576,7 +580,7 @@
   <aside class="card panel" id="panel" aria-live="polite"></aside>
 </main>
 
-<p class="note">Calories are rough estimates from typical labels: a scoop of protein powder is about 120 cal, a Great Value blueberry Greek nonfat yogurt cup about 130 cal, 2 lbs of strawberries about 290 cal, and 5 medium oranges about 310 cal. Six 1.55 oz Hershey's milk chocolate bars come to about 1,320 cal and 150 g of sugar. A 13 oz jar of Nutella is about 2,000 cal and 210 g of sugar.</p>
+<p class="note">Calories are rough estimates from typical labels and portions. Swaps: a scoop of protein powder in water is about 120 cal, a Great Value blueberry Greek nonfat yogurt cup 130, 2 lbs of strawberries 290, 5 medium oranges 310, a 6 oz tilapia fillet 250, ½ lb of garlic shrimp 270, a 3-egg veggie omelette 260, a 6 oz chicken breast 280, a banana 105, 2 cups of grapes 210, and a zero-sugar Great Value electrolyte drink about 10. Cravings: a plate of biryani is about 1,200 cal, a fried-chicken meal 1,100, two packs of Maggi 620, a Burger King meal 1,000, 15 frozen nuggets 800, half a 1.5 qt tub of ice cream 840, a 13 oz jar of Nutella 2,000, a box of brownies or cookies 700, half a large pizza 1,000, and a 64 oz bottle of Sunny D 480. Times bought come from your expense sheet.</p>
 </div>
 
 <div class="tab-panel" id="tab-trends" role="tabpanel" aria-labelledby="tabBtn-trends" hidden>
@@ -990,99 +994,156 @@
 </script>
 <script>
 (() => {
+  // Healthy swaps. cal is for the amount named in the title.
+  const FOODS = {
+    shake:    { icon: '🥤', title: 'Protein shake + water', text: 'Craving handled, protein in.', cal: 120, chip: 'Shake',
+                ask: 'Protein powder + water available?', q: 'Do you have protein powder and water on hand?',
+                sub: 'One scoop in cold water. Craving handled, protein in.', win: 'Mix the shake. Drink the water.',
+                none: 'No powder or water?', out: 'the shake is out' },
+    yogurt:   { icon: '🫐', title: 'Great Value blueberry Greek yogurt', text: 'Sweet, creamy, 12 g protein.', cal: 130, chip: 'Yogurt',
+                ask: 'Blueberry yogurt available?', q: 'Do you have the Great Value blueberry yogurt?',
+                sub: 'The Greek nonfat cup is sweet and creamy, with 12 g of protein.', win: 'Grab the blueberry yogurt.',
+                none: 'No yogurt?', out: 'the yogurt is out' },
+    straw:    { icon: '🍓', title: 'Eat 2 lbs of strawberries', text: 'Sweet, filling and light.', cal: 290, chip: 'Strawberries',
+                ask: 'Strawberries available?', q: 'Can you get strawberries?',
+                sub: '2 lbs makes a big, satisfying bowl.', win: 'Grab 2 lbs of strawberries.',
+                none: 'No strawberries?', out: 'the strawberries are out' },
+    oranges:  { icon: '🍊', title: 'Go for 5 oranges', text: 'Juicy, sweet and full of fiber.', cal: 310, chip: 'Oranges',
+                ask: 'Oranges available?', q: 'Can you get oranges?',
+                sub: 'Peel them slowly. Five oranges take a while to eat.', win: 'Peel 5 oranges.',
+                none: 'No oranges?', out: 'the oranges are out' },
+    tilapia:  { icon: '🐟', title: 'Spiced tilapia fillet', text: '6 oz, pan-seared with masala.', cal: 250, chip: 'Tilapia',
+                ask: 'Tilapia available?', q: 'Do you have tilapia in the freezer?',
+                sub: 'A 6 oz fillet pan-seared with masala: the same spice hit with about 35 g of protein.', win: 'Cook the tilapia.',
+                none: 'No tilapia?', out: "there's no tilapia" },
+    shrimp:   { icon: '🍤', title: 'Garlic shrimp', text: '½ lb with garlic and chilli.', cal: 270, chip: 'Shrimp',
+                ask: 'Shrimp available?', q: 'Do you have shrimp?',
+                sub: 'Half a pound sautéed with garlic and chilli in a teaspoon of oil. Ready in 10 minutes.', win: 'Sauté the shrimp.',
+                none: 'No shrimp?', out: "there's no shrimp" },
+    omelette: { icon: '🍳', title: 'Veggie omelette', text: '3 eggs, onion, tomato, chilli.', cal: 260, chip: 'Omelette',
+                ask: 'Eggs available?', q: 'Do you have eggs?',
+                sub: 'Three eggs with onion, tomato and green chilli. Hot, savory and done in 5 minutes.', win: 'Make the omelette.',
+                none: 'No eggs?', out: 'there are no eggs' },
+    chicken:  { icon: '🍗', title: 'Grilled chicken breast', text: '6 oz, spiced, no breading.', cal: 280, chip: 'Chicken',
+                ask: 'Chicken breast available?', q: 'Do you have chicken breast?',
+                sub: '6 oz, spiced and grilled or air-fried. All the chicken, none of the breading.', win: 'Cook the chicken breast.',
+                none: 'No chicken?', out: "there's no chicken" },
+    electro:  { icon: '💧', title: 'Great Value electrolyte drink', text: 'Flavored, zero sugar, ice cold.', cal: 10, chip: 'Electrolyte',
+                ask: 'Electrolyte drink available?', q: 'Do you have a Great Value electrolyte drink?',
+                sub: 'Flavored, zero sugar, ice cold. The same fruity sip with almost no calories.', win: 'Pour the electrolyte drink.',
+                none: 'No electrolyte drink?', out: 'the electrolyte drink is out' },
+    banana:   { icon: '🍌', title: 'Frozen banana', text: 'Eat it like a popsicle.', cal: 105, chip: 'Banana',
+                ask: 'Bananas available?', q: 'Do you have a banana?',
+                sub: 'Freeze it and eat it like a popsicle, or blend it into soft serve.', win: 'Grab the banana.',
+                none: 'No bananas?', out: 'the bananas are out' },
+    grapes:   { icon: '🍇', title: 'Frozen green grapes', text: '2 cups, like little sorbet bites.', cal: 210, chip: 'Grapes',
+                ask: 'Grapes available?', q: 'Do you have green grapes?',
+                sub: 'Two cups, frozen into little sorbet bites.', win: 'Grab the grapes.',
+                none: 'No grapes?', out: 'the grapes are out' },
+  };
+
+  // Top 10 from the expense sheet, by estimated calories (cooking staples left out).
+  // cal is one sitting; cat matches the item name in data/junk_food.js for the times-bought count.
+  // alts run best match first; the last one is the fallback with no question.
   const CRAVINGS = {
     biryani: {
-      label: 'Biryani', icon: '🍛', name: 'biryani', chip: 'Biryani', cal: 1300,
+      label: 'Biryani', icon: '🍛', name: 'biryani', cal: 1200, cat: 'Biryani (restaurant / Uber Eats)',
       what: 'one plate of biryani', short: 'the biryani',
       startText: 'The urge hits. Pause before you order anything.',
       startSub: "Don't open the delivery app yet. Give this 30 seconds.",
-      want: 'No, I want the biryani',
-      costTitle: '+2 kg fat', costChip: '1,300 cal', costLine: '+2 kg fat, 1,300 cal.',
-      lossSub: 'Biryani instead of the swap means +2 kg fat and 1,300 cal.',
-      stats: [{ value: '+2', unit: 'kg', label: 'fat' }, { count: 1300, label: 'calories' }],
+      alts: ['tilapia', 'shrimp', 'chicken', 'omelette', 'shake', 'yogurt'],
     },
-    hersheys: {
-      label: "Hershey's", icon: '🍫', name: "Hershey's", chip: "Hershey's", cal: 1320,
-      what: "a 6-pack of Hershey's bars", short: "six Hershey's bars",
-      startText: 'Six bars go fast. Pause before you open the first one.',
-      startSub: 'Leave the wrapper closed. Give this 30 seconds.',
-      want: "No, I want the Hershey's",
-      costTitle: '≈ 1,320 cal', costChip: '≈ 150 g sugar', costLine: 'about 1,320 cal and 150 g sugar.',
-      lossSub: "Six Hershey's bars instead of the swap means about 1,320 cal and 150 g of sugar.",
-      stats: [{ count: 1320, approx: true, label: 'calories' }, { count: 150, approx: true, unit: 'g', label: 'sugar' }],
+    popeyes: {
+      label: 'Popeyes / KFC', icon: '🍗', name: 'fried chicken', cal: 1100, cat: 'Popeyes / KFC / fried chicken',
+      what: 'a fried-chicken meal', short: 'the fried chicken',
+      startText: 'Crispy and salty, one tap away. Pause before you order.',
+      startSub: "Don't open the delivery app yet. Give this 30 seconds.",
+      alts: ['chicken', 'tilapia', 'shrimp', 'omelette', 'shake', 'yogurt'],
+    },
+    maggi: {
+      label: 'Maggi', icon: '🍜', name: 'Maggi', cal: 620, cat: 'Maggi / Top Ramen',
+      what: 'two packs of Maggi', short: 'the Maggi',
+      startText: 'Five minutes to noodles. Pause before the water boils.',
+      startSub: 'Leave the packets closed. Give this 30 seconds.',
+      alts: ['omelette', 'shrimp', 'tilapia', 'chicken', 'shake', 'yogurt'],
+    },
+    burger: {
+      label: 'Burger King', icon: '🍔', name: 'Burger King', cal: 1000, cat: 'Burger King / burger meals',
+      what: 'a Burger King meal', short: 'the burger meal',
+      startText: 'The drive-through is close. Pause before you go.',
+      startSub: 'Put the keys down. Give this 30 seconds.',
+      alts: ['chicken', 'omelette', 'shrimp', 'tilapia', 'shake', 'yogurt'],
+    },
+    nuggets: {
+      label: 'Nuggets', icon: '🐔', name: 'nuggets', cal: 800, cat: 'Frozen nuggets / strips / patties',
+      what: 'a plate of 15 frozen nuggets', short: 'the nuggets',
+      startText: 'The air fryer is calling. Pause before you open the bag.',
+      startSub: 'Leave the freezer shut. Give this 30 seconds.',
+      alts: ['chicken', 'shrimp', 'tilapia', 'omelette', 'shake', 'yogurt'],
+    },
+    icecream: {
+      label: 'Ice cream', icon: '🍨', name: 'ice cream', cal: 840, cat: 'Ice cream',
+      what: 'half a 1.5 qt tub of ice cream', short: 'the ice cream',
+      startText: 'Cold and sweet sounds perfect. Pause before the first scoop.',
+      startSub: 'Leave the tub in the freezer. Give this 30 seconds.',
+      alts: ['yogurt', 'shake', 'banana', 'grapes', 'straw', 'oranges'],
     },
     nutella: {
-      label: 'Nutella', icon: '🫙', name: 'Nutella', chip: 'Nutella', cal: 2000,
-      what: 'the whole 13\u00a0oz jar of Nutella', short: 'the Nutella jar',
+      label: 'Nutella', icon: '🫙', name: 'Nutella', cal: 2000, cat: 'Nutella / chocolate spread',
+      what: 'the whole 13 oz jar of Nutella', short: 'the Nutella jar',
       startText: 'One spoon turns into the whole jar. Pause first.',
       startSub: 'Put the spoon down. Give this 30 seconds.',
-      want: 'No, I want the Nutella',
-      costTitle: '≈ 2,000 cal', costChip: '≈ 210 g sugar', costLine: 'about 2,000 cal and 210 g sugar.',
-      lossSub: 'The whole jar instead of the swap means about 2,000 cal and 210 g of sugar.',
-      stats: [{ count: 2000, approx: true, label: 'calories' }, { count: 210, approx: true, unit: 'g', label: 'sugar' }],
+      alts: ['shake', 'yogurt', 'straw', 'banana', 'grapes', 'oranges'],
+    },
+    desserts: {
+      label: 'Brownies & cookies', icon: '🍪', name: 'brownies', cal: 700, cat: 'Fudge / brownies / cake / cookies',
+      what: 'a box of brownies or cookies', short: 'the brownies',
+      startText: 'One more bite turns into the whole box. Pause first.',
+      startSub: 'Leave the box closed. Give this 30 seconds.',
+      alts: ['yogurt', 'shake', 'straw', 'banana', 'grapes', 'oranges'],
+    },
+    pizza: {
+      label: 'Pizza', icon: '🍕', name: 'pizza', cal: 1000, cat: "Pizza (Pizza Hut, Domino's, frozen)",
+      what: 'half a large pizza', short: 'the pizza',
+      startText: 'Hot and cheesy sounds perfect. Pause before you order.',
+      startSub: "Don't open the delivery app yet. Give this 30 seconds.",
+      alts: ['omelette', 'shrimp', 'chicken', 'tilapia', 'shake', 'yogurt'],
+    },
+    sunnyd: {
+      label: 'Sunny D', icon: '🧃', name: 'Sunny D', cal: 480, cat: 'Sunny D / orange juice',
+      what: 'the whole 64 oz bottle of Sunny D', short: 'the Sunny D',
+      startText: 'A big cold glass sounds good. Pause before you pour.',
+      startSub: 'Leave the bottle in the fridge. Give this 30 seconds.',
+      alts: ['electro', 'oranges', 'straw', 'grapes', 'yogurt', 'shake'],
     },
   };
 
+  const N_ALTS = 6;
+  const PLAN = ['Best choice', 'Plan B', 'Plan C', 'Plan D', 'Plan E', 'Plan F'];
   const NODES = {
-    start:    { kind: 'start', tag: 'Trigger', i: 0 },
-    swap:     { kind: 'ask',   icon: '?',  tag: 'Decision',    title: 'Swap it for protein powder + water?', text: 'Your first move is always the shake.', i: 1, chip: 'Swap?' },
-    loss:     { kind: 'loss',  icon: '⚠️', tag: 'The cost',    i: 2 },
-    protein:  { kind: 'ask',   icon: '?',  tag: 'Decision',    title: 'Protein powder + water available?',  text: 'Check the shelf before anything else.', i: 2, chip: 'Powder?' },
-    shake:    { kind: 'win',   icon: '🥤', tag: 'Best choice', title: 'Protein shake + water',              text: 'Craving handled, protein in.', kcal: '≈ 120 cal', i: 3, chip: 'Shake' },
-    yog:      { kind: 'ask',   icon: '?',  tag: 'Decision',    title: 'Blueberry yogurt available?',        text: 'Plan B when the shake is out.', i: 3, chip: 'Yogurt?' },
-    yogWin:   { kind: 'win',   icon: '🫐', tag: 'Plan B',      title: 'Great Value blueberry Greek yogurt', text: 'Sweet, creamy, 12\u00a0g protein.', kcal: '≈ 130 cal', i: 4, chip: 'Yogurt' },
-    straw:    { kind: 'ask',   icon: '?',  tag: 'Decision',    title: 'Strawberries available?',            text: 'Plan C when the yogurt is out.', i: 4, chip: 'Strawberries?' },
-    strawWin: { kind: 'win',   icon: '🍓', tag: 'Plan C',      title: 'Eat 2 lbs of strawberries',          text: 'Sweet, filling and light.', kcal: '≈ 290 cal', i: 5, chip: 'Strawberries' },
-    oranges:  { kind: 'win',   icon: '🍊', tag: 'Plan D',      title: 'Go for 5 oranges',                   kcal: '≈ 310 cal', i: 5, chip: 'Oranges' },
+    start: { kind: 'start', tag: 'Trigger', i: 0 },
+    swap:  { kind: 'ask', icon: '?', tag: 'Decision', title: 'Swap it for something better?', text: 'Your first move is always a swap.', i: 1, chip: 'Swap?' },
+    loss:  { kind: 'loss', icon: '⚠️', tag: 'The cost', i: 2 },
   };
-
   const EDGES = [
-    { from: 'start',   to: 'swap' },
-    { from: 'swap',    to: 'protein',  label: 'Yes', type: 'yes' },
-    { from: 'swap',    to: 'loss',     label: 'No',  type: 'no' },
-    { from: 'protein', to: 'shake',    label: 'Yes', type: 'yes' },
-    { from: 'protein', to: 'yog',      label: 'No',  type: 'no' },
-    { from: 'yog',     to: 'yogWin',   label: 'Yes', type: 'yes' },
-    { from: 'yog',     to: 'straw',    label: 'No',  type: 'no' },
-    { from: 'straw',   to: 'strawWin', label: 'Yes', type: 'yes' },
-    { from: 'straw',   to: 'oranges',  label: 'No',  type: 'no' },
+    { from: 'start', to: 'swap' },
+    { from: 'swap',  to: 'ask1', label: 'Yes', type: 'yes' },
+    { from: 'swap',  to: 'loss', label: 'No',  type: 'no' },
   ];
+  // Each "available?" question leads to its swap on Yes, and to the next question on No
+  for (let k = 1; k <= N_ALTS; k++) {
+    if (k < N_ALTS) {
+      NODES['ask' + k] = { kind: 'ask', icon: '?', tag: 'Decision', i: k + 1 };
+      EDGES.push({ from: 'ask' + k, to: 'alt' + k, label: 'Yes', type: 'yes' });
+      EDGES.push({ from: 'ask' + k, to: k + 1 < N_ALTS ? 'ask' + (k + 1) : 'alt' + N_ALTS, label: 'No', type: 'no' });
+    }
+    NODES['alt' + k] = { kind: 'win', tag: PLAN[k - 1], i: k + 2 };
+  }
 
-  const STEPS = {
-    swap: {
-      q: 'Will you have protein powder + water instead?',
-      sub: 'This is the swap. It settles the craving for a fraction of the calories.',
-    },
-    protein: {
-      q: 'Do you have protein powder and water on hand?',
-      sub: 'If you do, mix it now. If not, there is a backup.',
-      choices: [
-        { label: 'Yes, I have both', to: 'shake', type: 'yes' },
-        { label: 'No, not available', to: 'yog', type: 'no' },
-      ],
-    },
-    yog: {
-      q: 'Do you have the Great Value blueberry yogurt?',
-      sub: 'The Greek nonfat cup is sweet and creamy, with 12 g of protein.',
-      choices: [
-        { label: 'Yes, I have one', to: 'yogWin', type: 'yes' },
-        { label: 'No yogurt', to: 'straw', type: 'no' },
-      ],
-    },
-    straw: {
-      q: 'Can you get strawberries?',
-      sub: '2 lbs makes a big, satisfying bowl.',
-      choices: [
-        { label: 'Yes, I can get them', to: 'strawWin', type: 'yes' },
-        { label: 'No strawberries', to: 'oranges', type: 'no' },
-      ],
-    },
-    shake:    { win: true, q: 'Mix the shake. Drink the water.', sub: 'Protein powder with water. Craving handled.', cal: 120 },
-    yogWin:   { win: true, q: 'Grab the blueberry yogurt.', sub: 'One Great Value Greek nonfat cup. Eat it slowly with a spoon.', cal: 130 },
-    strawWin: { win: true, q: 'Grab 2 lbs of strawberries.', sub: 'Wash them, bowl them, eat slowly.', cal: 290 },
-    oranges:  { win: true, q: 'Peel 5 oranges.', sub: 'Last fallback, and still a huge win.', cal: 310 },
-    loss:     { loss: true, q: 'That costs you.' },
-  };
+  const DATA = window.JUNK_FOOD;
+  const int = (v) => Math.round(v).toLocaleString('en-US');
+  const since = DATA ? new Date(DATA.first + 'T00:00').toLocaleString('en-US', { month: 'short', year: 'numeric' }) : '';
+  const boughtCount = (c) => (DATA && DATA.items.find((it) => it.name === c.cat) || {}).n;
 
   const root = document.documentElement;
   const flow = document.getElementById('flow');
@@ -1122,14 +1183,24 @@
     try { const s = localStorage.getItem('craving-pick'); if (CRAVINGS[s]) craving = s; } catch (e) {}
   }
 
-  // Nodes whose text depends on the craving
+  // Every node's text depends on the craving
   function nodeView(id) {
     const c = CRAVINGS[craving];
     const n = NODES[id];
-    if (id === 'start') return { ...n, icon: c.icon, title: `Craving ${c.name}`, text: c.startText, chip: c.chip };
-    if (id === 'loss') return { ...n, title: c.costTitle, text: `Skipping the swap means ${c.what}.`, kcal: c.costChip, chip: c.chip };
-    if (id === 'oranges') return { ...n, text: `The last fallback. Still far ahead of ${c.short}.` };
-    return n;
+    if (id === 'start') return { ...n, icon: c.icon, title: `Craving ${c.name}`, text: c.startText, chip: c.label };
+    if (id === 'swap') return n;
+    if (id === 'loss') {
+      const times = boughtCount(c);
+      return { ...n, title: `≈ ${int(c.cal)} cal`, text: `Skipping the swap means ${c.what}.`, kcal: times ? `Bought ${times}×` : '', chip: c.label };
+    }
+    const k = +id.slice(3);
+    const f = FOODS[c.alts[k - 1]];
+    if (id.startsWith('ask')) {
+      const text = k === 1 ? 'Check this first.' : `${PLAN[k - 1]}, for when ${FOODS[c.alts[k - 2]].out}.`;
+      return { ...n, title: f.ask, text, chip: f.chip + '?' };
+    }
+    const text = k === N_ALTS ? `The last fallback. Still far ahead of ${c.short}.` : f.text;
+    return { ...n, icon: f.icon, title: f.title, text, kcal: `≈ ${int(f.cal)} cal`, chip: f.chip };
   }
 
   function stepView(id) {
@@ -1143,15 +1214,40 @@
     }
     if (id === 'swap') {
       return {
-        ...STEPS.swap,
+        q: 'Will you swap it for something better?',
+        sub: `There are ${N_ALTS} options, best match first. Any of them settles the craving for a fraction of the calories.`,
         choices: [
-          { label: "Yes, I'll swap", to: 'protein', type: 'yes' },
-          { label: c.want, to: 'loss', type: 'no' },
+          { label: "Yes, I'll swap", to: 'ask1', type: 'yes' },
+          { label: `No, I want ${c.short}`, to: 'loss', type: 'no' },
         ],
       };
     }
-    if (id === 'loss') return { ...STEPS.loss, sub: c.lossSub };
-    return STEPS[id];
+    if (id === 'loss') {
+      const times = boughtCount(c);
+      const what = c.what[0].toUpperCase() + c.what.slice(1);
+      return {
+        loss: true,
+        q: 'That costs you.',
+        sub: `${what} instead of a swap means about ${int(c.cal)} cal.` + (times ? ` You've bought it ${times} times since ${since}.` : ''),
+        stats: [
+          { count: c.cal, approx: true, label: 'calories' },
+          ...(times ? [{ count: times, label: `times bought since ${since}` }] : []),
+        ],
+      };
+    }
+    const k = +id.slice(3);
+    const f = FOODS[c.alts[k - 1]];
+    if (id.startsWith('ask')) {
+      return {
+        q: f.q,
+        sub: f.sub,
+        choices: [
+          { label: 'Yes, I have it', to: 'alt' + k, type: 'yes' },
+          { label: 'No, not available', to: k + 1 < N_ALTS ? 'ask' + (k + 1) : 'alt' + N_ALTS, type: 'no' },
+        ],
+      };
+    }
+    return { win: true, q: f.win, sub: k === N_ALTS ? `${f.sub} Last fallback, and still a huge win.` : f.sub, cal: f.cal };
   }
 
   /* Build nodes */
@@ -1272,7 +1368,8 @@
   function moveThumb() {
     const b = pickerBtns.find((x) => x.dataset.craving === craving);
     thumb.style.width = b.offsetWidth + 'px';
-    thumb.style.transform = `translateX(${b.offsetLeft}px)`;
+    thumb.style.height = b.offsetHeight + 'px';
+    thumb.style.transform = `translate(${b.offsetLeft}px, ${b.offsetTop}px)`;
   }
   new ResizeObserver(moveThumb).observe(picker);
 
@@ -1286,7 +1383,7 @@
     moveThumb();
     cravingName.textContent = CRAVINGS[id].name;
     if (animate) retrigger(cravingName, 'enter');
-    for (const nid of ['start', 'loss', 'oranges']) {
+    for (const nid of Object.keys(NODES)) {
       fillNode(nid);
       if (animate && !reduceMotion.matches && nodeEl[nid].classList.contains('ready')) retrigger(nodeEl[nid], 'flip');
     }
@@ -1393,8 +1490,7 @@
 
   /* Effects */
   function celebrate(id) {
-    const s = STEPS[id];
-    if (!s) return;
+    const s = stepView(id);
     if (s.win) burst(id);
     if (s.loss) {
       const el = nodeEl[id];
@@ -1472,11 +1568,8 @@
         <h2>Craving ${c.name}?</h2>
         <p>Answer a few quick questions and the chart lights up your path.</p>
         <ul class="how">
-          <li data-kind="ask"><span class="n">1</span><span>Swap first: protein powder + water.</span></li>
-          <li data-kind="ask"><span class="n">2</span><span>No powder or water? Great Value blueberry yogurt.</span></li>
-          <li data-kind="ask"><span class="n">3</span><span>No yogurt? Get 2 lbs of strawberries.</span></li>
-          <li data-kind="ask"><span class="n">4</span><span>No strawberries? Go for 5 oranges.</span></li>
-          <li data-kind="loss"><span class="n">!</span><span>Skip the swap and it's ${c.costLine}</span></li>
+          ${c.alts.map((a, k) => `<li data-kind="ask"><span class="n">${k + 1}</span><span>${k === 0 ? 'Swap first:' : FOODS[c.alts[k - 1]].none} ${FOODS[a].title}.</span></li>`).join('')}
+          <li data-kind="loss"><span class="n">!</span><span>Skip the swap and it's about ${int(c.cal)} cal.</span></li>
         </ul>
         <div class="choices"><button class="choice primary" data-act="start" type="button">Walk me through it<span class="dot">${ARROW}</span></button></div>`;
     } else {
@@ -1496,11 +1589,11 @@
         body = `
           <div class="stat">
             <div class="big"><span class="approx">≈</span><span data-count="${s.cal}" data-from="${c.cal}">${c.cal}</span><small>cal</small></div>
-            <div class="sub">About ${(c.cal - s.cal).toLocaleString('en-US')} cal less than ${c.short}. Nice save.</div>
+            <div class="sub">About ${int(c.cal - s.cal)} cal less than ${c.short}. Nice save.</div>
           </div>`;
       } else {
         body = `
-          <div class="stat-row">${c.stats.map(statHTML).join('')}</div>
+          <div class="stat-row">${s.stats.map(statHTML).join('')}</div>
           <div class="choices"><button class="choice yes" data-act="reswap" type="button">Make the swap instead<span class="dot">${CHECK}</span></button></div>`;
       }
       const chips = hist
@@ -1535,7 +1628,7 @@
         if (busy) return;
         hist.pop();
         applyState();
-        return go('protein');
+        return go('ask1');
     }
   });
   walkBtn.addEventListener('click', startWalk);
