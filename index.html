@@ -482,8 +482,11 @@
   }
   @media (max-width: 640px) {
     .hero { padding-top: 30px; }
-    .picker { display: flex; }
-    .picker button { flex: 1; justify-content: center; padding: 0 8px; gap: 6px; font-size: 13.5px; }
+    .picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+    .picker button {
+      justify-content: flex-start; height: auto; min-height: 42px; padding: 6px 10px; gap: 8px;
+      font-size: 13.5px; line-height: 1.2; text-align: left; white-space: normal;
+    }
     .chart { padding: 20px 14px 24px; border-radius: 20px; }
     .flow {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -510,6 +513,35 @@
     .tile { padding: 14px 14px 16px; border-radius: 18px; }
     .tile-val { font-size: 24px; }
     .tr-card { padding: 18px 14px 20px; border-radius: 20px; }
+
+    /* The table turns into stacked rows: rank, name, then the numbers in two labeled columns */
+    .table-wrap { overflow: visible; margin: 10px 0 0; }
+    .tr-table, .tr-table tbody, .tr-table tfoot { display: block; }
+    .tr-table thead { display: none; }
+    .tr-table tr {
+      display: grid; grid-template-columns: 22px minmax(0, 1fr) minmax(0, 1fr); gap: 6px 12px;
+      padding: 12px 4px; border-bottom: 1px solid var(--border);
+    }
+    .tr-table td { padding: 0; border: 0; white-space: normal; }
+    .tr-table td:empty { display: none; }
+    .tr-table .rank { grid-row: 1 / span 4; padding-top: 1px; }
+    .tr-table td:nth-child(2) { grid-column: 2 / -1; }
+    .tr-table .num { text-align: left; font-size: 13px; }
+    .tr-table .num::before {
+      content: attr(data-label); display: block; margin-bottom: 1px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+    }
+    .tr-table tfoot tr { border-bottom: 0; }
+    .item-btn { align-items: flex-start; }
+    .item-btn i { margin-top: 4px; }
+  }
+  @media (max-width: 380px) {
+    .tabs-row .seg button { gap: 6px; padding: 0 6px; font-size: 13px; }
+    .tabs-row .seg button svg { display: none; }
+    .flow { column-gap: 20px; }
+    .node { padding: 10px; }
+    .chart { padding: 18px 10px 22px; }
+    .tile-val { font-size: 21px; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
@@ -672,7 +704,8 @@
       if (k === id && animate && !reduceMotion.matches) { el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); }
     }
     try { localStorage.setItem('craving-tab', id); } catch (e) {}
-    try { history.replaceState(null, '', id === 'trends' ? '#trends' : location.pathname + location.search); } catch (e) {}
+    // Only rewrite the hash when the user switches tabs: on load the flowchart still needs to read #<craving>
+    if (animate) try { history.replaceState(null, '', id === 'trends' ? '#trends' : location.pathname + location.search); } catch (e) {}
     if (id === 'trends' && D) renderChart();
   }
   tabBtns.forEach((b, i) => {
@@ -764,6 +797,8 @@
 
   /* Table */
   const rowsEl = $('trRows');
+  // On phones the header row is hidden, so each number carries its column name
+  const HEAD = [...document.querySelectorAll('.tr-table thead th')].map((th) => th.textContent);
   const rowEls = D.items.map((it, i) => {
     const tr = document.createElement('tr');
     const cells = [
@@ -772,7 +807,7 @@
     cells.forEach((c, j) => {
       const td = document.createElement('td');
       if (j === 0) td.className = 'rank';
-      if (j >= 2) td.className = 'num';
+      if (j >= 2) { td.className = 'num'; td.dataset.label = HEAD[j]; }
       if (j === 1) {
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -798,7 +833,7 @@
   const foot = document.createElement('tr');
   ['', 'Total', int(T.n), money(T.spent), '', int(T.kcal), `~${int(T.lb)} lb / ${int(T.kg)} kg`].forEach((c, j) => {
     const td = document.createElement('td');
-    if (j >= 2) td.className = 'num';
+    if (j >= 2) { td.className = 'num'; td.dataset.label = HEAD[j]; }
     td.textContent = c;
     foot.appendChild(td);
   });
@@ -924,11 +959,6 @@
       t.textContent = 'Peak ' + m.axis(totals[peak]);
     }
 
-    for (let i = 0; i < n; i++) {
-      const hit = make('rect', { x: ml + i * band, y: mt, width: band, height: ph, fill: 'transparent' }, svg);
-      hit.addEventListener('pointerenter', () => setActive(i));
-      hit.addEventListener('pointermove', () => { if (active !== i) setActive(i); });
-    }
     setActive(active != null && document.activeElement === svg ? Math.min(active, n - 1) : null);
   }
 
@@ -971,7 +1001,18 @@
     tip.classList.add('show');
   }
 
-  svg.addEventListener('pointerleave', () => { if (document.activeElement !== svg) setActive(null); });
+  // The whole column is the hit target: find the month under the pointer, so a finger can drag across bars
+  const pickMonth = (ev) => {
+    if (!geo) return;
+    const x = ev.clientX - svg.getBoundingClientRect().left;
+    const i = Math.floor((x - geo.ml) / geo.band);
+    if (i >= 0 && i < D.months.length && i !== active) setActive(i);
+  };
+  svg.addEventListener('pointerdown', pickMonth);
+  svg.addEventListener('pointermove', pickMonth);
+  // A touch ends with pointerleave, so only a mouse leaving hides the tooltip; a tap elsewhere hides it on touch
+  svg.addEventListener('pointerleave', (ev) => { if (ev.pointerType === 'mouse' && document.activeElement !== svg) setActive(null); });
+  document.addEventListener('pointerdown', (ev) => { if (active != null && !svg.contains(ev.target) && document.activeElement !== svg) setActive(null); });
   svg.addEventListener('focus', () => setActive(active ?? D.months.length - 1));
   svg.addEventListener('blur', () => setActive(null));
   svg.addEventListener('keydown', (ev) => {
