@@ -1,6 +1,6 @@
 # Junk food I buy most often
 
-From my expense sheet, Aug 2023 – Oct 24, 2026. Generated 2026-10-27 by `update_sheet.py`.
+From my expense sheet, Aug 2023 – Oct 24, 2026. Generated 2026-10-28 by `update_sheet.py`.
 
 ## Summary table
 
