@@ -1,12 +1,12 @@
 # Junk food I buy most often
 
-From my expense sheet, Aug 2023 – Oct 29, 2026. Generated 2026-10-31 by `update_sheet.py`.
+From my expense sheet, Aug 2023 – Oct 31, 2026. Generated 2026-11-01 by `update_sheet.py`.
 
 ## Summary table
 
 | # | Item | Times bought | $ spent | Est. kcal per purchase | Total kcal | Weight equivalent |
 |---|---|---|---|---|---|---|
-| 1 | Biryani (restaurant / Uber Eats) | 131 | $2,182 | 1,200 | 157,200 | 44.9 lb / 20.4 kg |
+| 1 | Biryani (restaurant / Uber Eats) | 132 | $2,205 | 1,200 | 158,400 | 45.3 lb / 20.5 kg |
 | 2 | Popeyes / KFC / fried chicken | 66 | $764 | 1,100 | 72,600 | 20.7 lb / 9.4 kg |
 | 3 | Maggi / Top Ramen | 40 | $138 | 1,800 | 72,000 | 20.6 lb / 9.3 kg |
 | 4 | Burger King / burger meals | 70 | $1,055 | 1,000 | 70,000 | 20.0 lb / 9.1 kg |
@@ -32,16 +32,16 @@ From my expense sheet, Aug 2023 – Oct 29, 2026. Generated 2026-10-31 by `updat
 | 24 | Monster / Red Bull | 43 | $161 | 230 | 9,890 | 2.8 lb / 1.3 kg |
 | 25 | Oreo milkshakes | 9 | $67 | 700 | 6,300 | 1.8 lb / 0.8 kg |
 | 26 | Fries | 5 | $11 | 400 | 2,000 | 0.6 lb / 0.3 kg |
-| | **Total** | **1,093** | **$7,223** | | **1,027,760 kcal** | **~294 lb / 133 kg** |
+| | **Total** | **1,094** | **$7,246** | | **1,028,960 kcal** | **~294 lb / 133 kg** |
 
 † Cooking staples (ghee, butter, sugar, condiments): these last a long time and are shared, so their calorie numbers are the roughest guesses here.
 
 ## What stands out
 
-- **2026 is much worse than the earlier years.** Of all the purchases since August 2023, 2026 so far has 89 of the 131 biryanis, 80 of the 123 sodas and 33 of the 43 energy drinks. Your junk-food rate went from about 710 kcal/day before 2026 to about 1,340 kcal/day in 2026.
-- **Biryani is the biggest problem.** It's the top item by calories and by money ($2,182 spent), and you've had it about 2.1 times a week in 2026.
+- **2026 is much worse than the earlier years.** Of all the purchases since August 2023, 2026 so far has 90 of the 132 biryanis, 80 of the 123 sodas and 33 of the 43 energy drinks. Your junk-food rate went from about 710 kcal/day before 2026 to about 1,340 kcal/day in 2026.
+- **Biryani is the biggest problem.** It's the top item by calories and by money ($2,205 spent), and you've had it about 2.1 times a week in 2026.
 - **Drinks add up even though each one seems small.** Sunny D, Soda and Monster together are 240 purchases, about 76,000 kcal or 22 lb.
-- **Takeout is where the money goes.** Biryani, burgers, fried chicken, pizza, Subway and other restaurant meals account for $4,658, 64% of the $7,223 spent on everything in this table.
+- **Takeout is where the money goes.** Biryani, burgers, fried chicken, pizza, Subway and other restaurant meals account for $4,682, 65% of the $7,246 spent on everything in this table.
 
 ## How to read these numbers
 
