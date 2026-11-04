@@ -42,7 +42,7 @@ Because the Action may add a commit after you push, run `git pull` before your n
 
 Built from three places in the sheet:
 
-- **Paychecks** – the `Date | Paycheck | …` table. Months not filled in there yet are counted from the "Biweekly n" entries in the earnings list (two paychecks a month from February 2026).
+- **Paychecks** – the `Date | Tution | Paycheck | …` table. Months not filled in there yet are counted from the "Biweekly n" entries in the earnings list (two paychecks a month from February 2026).
 - **Tuition** – the `Date | Tuition Salary` list, by payment date.
 - **Spending** – the main log, by date. Only rows paid from `Earnings` count; `To India` rows are money sent to India and `Investment` rows are investments. Expenses still paid from loan money aren't counted against savings.
 

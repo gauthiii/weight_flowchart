@@ -350,15 +350,21 @@ def add_months(key, n):
 
 
 def table_below(grid, header):
-    """Rows under a header cell whose left neighbour is a date: [(date text, value text)] until the date runs out."""
+    """Rows under a header cell, dated by the nearest "Date" column to its left:
+    [(date text, value text)] until the date runs out."""
     pos = find_cell(grid, header)
     if not pos:
         print(f"  note: no '{header}' table found in the sheet")
         return []
     r, c = pos
+    date_cols = [i for i in range(c) if grid[r][i].strip() == "Date"]
+    if not date_cols:
+        print(f"  WARNING: no 'Date' column to the left of '{header}' in the sheet")
+        return []
+    date_col = date_cols[-1]
     out = []
     for row in grid[r + 1:]:
-        when = row[c - 1].strip() if len(row) > c else ""
+        when = row[date_col].strip() if len(row) > c else ""
         if not when:
             break
         out.append((when, row[c].strip()))
@@ -398,7 +404,9 @@ def build_finance(text, rows):
     entered = {}
     for when, value in table_below(grid, "Paycheck"):
         k = parse_month(when)
-        if k and value:
+        if not k:
+            print(f"  WARNING: unreadable month in the Paycheck table: {when!r}")
+        elif value:
             entered[k] = parse_cost(value)
     inferred = inferred_paychecks(grid)
     for k in months:
