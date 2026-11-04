@@ -26,19 +26,21 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Pull the latest Google Sheet
-        run: python update_sheet.py
+      - name: Pull the latest Google Sheets
+        run: |
+          python update_sheet.py
+          python update_weight.py
 
       # Pushes made with GITHUB_TOKEN don't trigger workflows, so this can't loop
       - name: Commit refreshed data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/expenses.csv data/junk_food.js data/finance.js junk_food_summary.md
+          git add data/expenses.csv data/junk_food.js data/finance.js data/calories.csv data/weight.js junk_food_summary.md
           if git diff --cached --quiet; then
             echo "Sheet unchanged, nothing to commit."
           else
-            git commit -m "Update data from Google Sheet"
+            git commit -m "Update data from Google Sheets"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
@@ -47,7 +49,7 @@ jobs:
         run: |
           mkdir -p _site/data
           cp index.html _site/
-          cp data/junk_food.js data/finance.js _site/data/
+          cp data/junk_food.js data/finance.js data/weight.js _site/data/
 
       - uses: actions/configure-pages@v5
 

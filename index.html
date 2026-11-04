@@ -416,6 +416,42 @@
   .fin-table .neg { color: var(--bad); }
   .fin-table .mark { color: var(--muted); }
 
+  /* Weight and Goals tabs */
+  .wt-hero-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  .wt-hero-row .lede { flex: 1 1 340px; }
+  .wt-unit { flex: none; }
+  .wt-unit button { min-width: 52px; }
+  .fin-chart .proj { stroke-dasharray: 2 6; }
+  .fin-chart .ref { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.7; }
+  .fin-chart .ref-label { fill: var(--text); font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fin-chart .callout { fill: var(--text); font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums; paint-order: stroke; stroke: var(--surface-solid); stroke-width: 3px; }
+  .tr-chart.wt-short { min-height: 180px; }
+  .wt-details { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .wt-details summary { font-size: 13px; font-weight: 650; cursor: pointer; }
+  .wt-details .fine { margin-top: 8px; }
+  .tr-legend .swatch-faded { opacity: 0.4; }
+  .tr-legend .swatch-line { width: 18px; height: 0; border-radius: 0; border-top: 2px solid var(--g1); }
+  .tr-legend .swatch-dash { border-top-style: dotted; }
+  .wt-more { margin-top: 12px; height: 36px; padding: 0 14px; border: 1px solid var(--border); border-radius: 12px; background: transparent; color: var(--text); font-size: 13px; font-weight: 650; cursor: pointer; }
+  .wt-more:hover { background: var(--accent-soft); }
+  .tr-table.wt-table .goal-row td:first-child { font-weight: 700; }
+  .tr-table.wt-table .now-row td { color: var(--muted); }
+  .gl-presets { margin-top: 16px; flex-wrap: wrap; }
+  .gl-sliders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 24px; margin-top: 18px; }
+  .gl-slider { display: grid; gap: 8px; font-size: 13px; color: var(--muted); font-weight: 600; }
+  .gl-slider span { display: flex; justify-content: space-between; gap: 10px; }
+  .gl-slider b { color: var(--text); font-variant-numeric: tabular-nums; }
+  .gl-slider input { width: 100%; margin: 0; height: 24px; accent-color: var(--accent); cursor: pointer; }
+  .gl-balance { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .gl-balance div { font-size: 12.5px; color: var(--muted); }
+  .gl-balance b { display: block; margin-bottom: 2px; font-size: 18px; font-weight: 800; letter-spacing: -0.02em; color: var(--text); font-variant-numeric: tabular-nums; }
+  .gl-verdict { margin: 14px 0 0; font-size: 14px; line-height: 1.55; color: var(--text); }
+  .gl-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .gl-card { padding: 18px 18px 20px; border-radius: 20px; }
+  .gl-card .tile-val { font-size: 25px; white-space: normal; line-height: 1.15; }
+  .gl-card .gl-line { margin-top: 8px; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+  .gl-card .gl-stats { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+
   .trends { max-width: 1180px; margin: 0 auto; padding: 0 16px 40px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
   .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
   .tile { padding: 18px 18px 20px; border-radius: 20px; }
@@ -523,6 +559,7 @@
     .elabel { font-size: 10.5px; padding: 2px 8px; }
     .tabs-row .seg, .filters .seg { display: flex; width: 100%; }
     .tabs-row .seg button, .filters .seg button { flex: 1; padding: 0 8px; font-size: 13.5px; }
+    .tabs-row .seg button { flex: 1 1 auto; padding: 0 6px; font-size: 13px; }
     .item-select { width: 100%; }
     .tile { padding: 14px 14px 16px; border-radius: 18px; }
     .tile-val { font-size: 24px; }
@@ -549,6 +586,12 @@
     .tr-table.fin-table tr { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .tr-table.fin-table td:first-child { grid-column: 1 / -1; font-weight: 700; }
     .tr-table.fin-table td:nth-child(2) { grid-column: auto; }
+    .tr-table.wt-table tr { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tr-table.wt-table td:first-child { grid-column: 1 / -1; font-weight: 700; }
+    .tr-table.wt-table td:nth-child(2) { grid-column: auto; }
+    .gl-sliders, .gl-cards { grid-template-columns: minmax(0, 1fr); }
+    .gl-presets { display: flex; width: 100%; }
+    .gl-presets button { flex: 1 1 auto; padding: 0 8px; font-size: 13px; }
     .tab-lg { display: none; }
     .tab-sm { display: inline; }
     .tabs-row .seg button svg { display: none; }
@@ -556,7 +599,8 @@
     .item-btn i { margin-top: 4px; }
   }
   @media (max-width: 380px) {
-    .tabs-row .seg button { gap: 6px; padding: 0 6px; font-size: 13px; }
+    .tabs-row .seg button { gap: 6px; padding: 0 4px; font-size: 12px; }
+    .tabs-row .seg { gap: 2px; padding: 4px; }
     .tabs-row .seg button svg { display: none; }
     .flow { column-gap: 20px; }
     .node { padding: 10px; }
@@ -595,6 +639,14 @@
     <button type="button" role="tab" id="tabBtn-finances" data-tab="finances" aria-controls="tab-finances" aria-selected="false" tabindex="-1">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="14" rx="3"/><path d="M2 10h20M16 15h2"/><path d="M6 6V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1"/></svg>
       Finances
+    </button>
+    <button type="button" role="tab" id="tabBtn-weight" data-tab="weight" aria-controls="tab-weight" aria-selected="false" tabindex="-1">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="4"/><path d="M8 9a5.5 5.5 0 0 1 8 0l-2.5 2.5h-3z"/></svg>
+      <span class="tab-lg">Weight progress</span><span class="tab-sm">Weight</span>
+    </button>
+    <button type="button" role="tab" id="tabBtn-goals" data-tab="goals" aria-controls="tab-goals" aria-selected="false" tabindex="-1">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.5"/></svg>
+      <span class="tab-lg">Goal dates</span><span class="tab-sm">Goals</span>
     </button>
   </div>
 </div>
@@ -762,8 +814,165 @@
   </main>
 </div>
 
+<div class="tab-panel" id="tab-weight" role="tabpanel" aria-labelledby="tabBtn-weight" hidden>
+  <section class="hero">
+    <span class="eyebrow"><span class="pulse"></span>Every Sunday weigh-in</span>
+    <h1>Which way the <span class="grad">scale</span> is moving.</h1>
+    <div class="wt-hero-row">
+      <p class="lede" id="wtLede">Your weight each week, next to what you ate and how much you moved.</p>
+      <div class="seg wt-unit" role="group" aria-label="Weight unit">
+        <button type="button" data-unit="kg" aria-pressed="true">kg</button>
+        <button type="button" data-unit="lb" aria-pressed="false">lb</button>
+      </div>
+    </div>
+  </section>
+
+  <main class="trends">
+    <div class="tiles" id="wtTiles"></div>
+
+    <section class="card tr-card" aria-labelledby="wtWeightTitle">
+      <h2 id="wtWeightTitle">Weight each week</h2>
+      <p class="tr-sub" id="wtWeightSub"></p>
+      <div class="tr-chart fin-chart" id="wtWeight"></div>
+    </section>
+
+    <section class="card tr-card" aria-labelledby="wtChangeTitle">
+      <h2 id="wtChangeTitle">Lost or gained each week</h2>
+      <p class="tr-sub" id="wtChangeSub"></p>
+      <div class="tr-legend">
+        <span><i style="background: var(--g1)"></i>Lost</span>
+        <span><i style="background: var(--g2)"></i>Gained</span>
+      </div>
+      <div class="tr-chart fin-chart" id="wtChange"></div>
+    </section>
+
+    <section class="card tr-card" aria-labelledby="wtKcalTitle">
+      <h2 id="wtKcalTitle">Calories eaten per day</h2>
+      <p class="tr-sub">Average for each week, from the TOTAL column in your sheet. Hover or tap a week to see carbs, protein and fat.</p>
+      <div class="tr-legend">
+        <span><i style="background: var(--g1)"></i>Logged</span>
+        <span><i class="swatch-faded" style="background: var(--g1)"></i>Estimated (same total repeated)</span>
+      </div>
+      <div class="tr-chart fin-chart wt-short" id="wtKcal"></div>
+      <details class="wt-details">
+        <summary>How the macros are worked out</summary>
+        <p class="fine" id="wtMacroHow"></p>
+        <div class="table-wrap">
+          <table class="tr-table wt-table mac-table">
+            <thead>
+              <tr>
+                <th>Food</th><th class="num">Carbs</th><th class="num">Protein</th><th class="num">Fat</th><th class="num">Alcohol</th>
+              </tr>
+            </thead>
+            <tbody id="wtMacroRows"></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <div class="tr-grid">
+      <section class="card tr-card" aria-labelledby="wtStepsTitle">
+        <h2 id="wtStepsTitle">Steps per day</h2>
+        <p class="tr-sub">Average for each week.</p>
+        <div class="tr-chart fin-chart wt-short" id="wtSteps"></div>
+      </section>
+      <section class="card tr-card" aria-labelledby="wtCycleTitle">
+        <h2 id="wtCycleTitle">Cycling minutes per week</h2>
+        <p class="tr-sub" id="wtCycleSub"></p>
+        <div class="tr-chart fin-chart wt-short" id="wtCycle"></div>
+      </section>
+    </div>
+
+    <section class="card tr-card" aria-labelledby="wtTableTitle">
+      <h2 id="wtTableTitle">Week by week</h2>
+      <p class="tr-sub">Newest first. Each week runs Sunday to Saturday, and its change is the next Sunday's weight minus this one.</p>
+      <div class="table-wrap">
+        <table class="tr-table wt-table wt-weeks">
+          <thead>
+            <tr>
+              <th>Week of</th><th class="num">Weight</th><th class="num">Change</th><th class="num">Calories / day</th>
+              <th class="num">Steps / day</th><th class="num">Cycling</th>
+            </tr>
+          </thead>
+          <tbody id="wtRows"></tbody>
+        </table>
+      </div>
+      <button type="button" class="wt-more" id="wtMore"></button>
+      <p class="fine" id="wtFine"></p>
+    </section>
+
+    <p class="tr-update" id="wtUpdate">To pull the latest sheet, run <code>python3 update_weight.py</code> in this folder and reload the page.</p>
+  </main>
+</div>
+
+<div class="tab-panel" id="tab-goals" role="tabpanel" aria-labelledby="tabBtn-goals" hidden>
+  <section class="hero">
+    <span class="eyebrow"><span class="pulse"></span>Projected from your own numbers</span>
+    <h1>When you could reach <span class="grad" id="glHeroGoals">120, 100 and 80 kg</span>.</h1>
+    <div class="wt-hero-row">
+      <p class="lede" id="glLede"></p>
+      <div class="seg wt-unit" role="group" aria-label="Weight unit">
+        <button type="button" data-unit="kg" aria-pressed="true">kg</button>
+        <button type="button" data-unit="lb" aria-pressed="false">lb</button>
+      </div>
+    </div>
+  </section>
+
+  <main class="trends">
+    <div class="tiles" id="glTiles"></div>
+
+    <section class="card tr-card" aria-labelledby="glPlanTitle">
+      <h2 id="glPlanTitle">Pick the habits to project</h2>
+      <p class="tr-sub">Start from one of these, or drag the sliders to try your own numbers.</p>
+      <div class="seg gl-presets" id="glPresets" role="group" aria-label="Habits to project"></div>
+      <div class="gl-sliders">
+        <label class="gl-slider"><span>Calories per day <b id="glKcalVal"></b></span><input type="range" id="glKcal" min="1500" max="4500" step="50"></label>
+        <label class="gl-slider"><span>Steps per day <b id="glStepsVal"></b></span><input type="range" id="glSteps" min="0" max="25000" step="500"></label>
+        <label class="gl-slider"><span>Cycling per day <b id="glCycleVal"></b></span><input type="range" id="glCycle" min="0" max="120" step="5"></label>
+      </div>
+      <div class="gl-balance" id="glBalance"></div>
+      <p class="gl-verdict" id="glVerdict"></p>
+    </section>
+
+    <div class="gl-cards" id="glCards"></div>
+
+    <section class="card tr-card" aria-labelledby="glChartTitle">
+      <h2 id="glChartTitle">Your weight so far, and where these habits lead</h2>
+      <div class="tr-legend">
+        <span><i class="swatch-line"></i>Actual</span>
+        <span><i class="swatch-line swatch-dash"></i>Projected</span>
+      </div>
+      <div class="tr-chart fin-chart" id="glChart"></div>
+    </section>
+
+    <section class="card tr-card" aria-labelledby="glTableTitle">
+      <h2 id="glTableTitle">Goals and BMI milestones</h2>
+      <p class="tr-sub">BMI ranges use the WHO cut-offs for your height. Dates follow the habits picked above.</p>
+      <div class="table-wrap">
+        <table class="tr-table wt-table gl-table">
+          <thead>
+            <tr>
+              <th>Milestone</th><th class="num">Weight</th><th class="num">BMI</th><th class="num">Body fat (est.)</th>
+              <th class="num">Still to lose</th><th class="num">Projected date</th>
+            </tr>
+          </thead>
+          <tbody id="glRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card tr-card" aria-labelledby="glNotesTitle">
+      <h2 id="glNotesTitle">How these numbers work</h2>
+      <ul class="points" id="glNotes"></ul>
+    </section>
+
+    <p class="tr-update" id="glUpdate">To pull the latest sheet, run <code>python3 update_weight.py</code> in this folder and reload the page.</p>
+  </main>
+</div>
+
 <script src="data/junk_food.js"></script>
 <script src="data/finance.js"></script>
+<script src="data/weight.js"></script>
 <script>
 (() => {
   const D = window.JUNK_FOOD;
@@ -773,7 +982,7 @@
 
   /* Tabs */
   const tabBtns = [...$('tabs').querySelectorAll('[role="tab"]')];
-  const panels = { flow: $('tab-flow'), trends: $('tab-trends'), finances: $('tab-finances') };
+  const panels = { flow: $('tab-flow'), trends: $('tab-trends'), finances: $('tab-finances'), weight: $('tab-weight'), goals: $('tab-goals') };
   let tab = 'flow';
   try { const s = localStorage.getItem('craving-tab'); if (panels[s]) tab = s; } catch (e) {}
   const fromHash = location.hash.slice(1);
@@ -804,7 +1013,7 @@
       setTab(next.dataset.tab, true);
     });
   });
-  // The flowchart script writes the craving into the hash on load, so restore #trends / #finances after it runs
+  // The flowchart script writes the craving into the hash on load, so restore the open tab's hash after it runs
   addEventListener('DOMContentLoaded', () => {
     if (tab !== 'flow') try { history.replaceState(null, '', '#' + tab); } catch (e) {}
   });
@@ -1396,6 +1605,695 @@
     series: () => ({ mode: 'bar', values: M.map((m) => m.india), color: () => 'var(--g7)' }),
     tip: (i) => ({ value: money(M[i].india) + ' sent', rows: [{ label: 'sent so far', value: money(sentSoFar[i]) }, { label: 'of income', value: pct(M[i].india, M[i].income) + '%' }] }),
   });
+})();
+</script>
+<script>
+(() => {
+  const W = window.WEIGHT;
+  const $ = (id) => document.getElementById(id);
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  if (!W) {
+    for (const [tiles, box] of [['wtTiles', 'wtWeight'], ['glTiles', 'glChart']]) {
+      $(tiles).hidden = true;
+      $(box).innerHTML = '<p class="tr-empty">No data yet. Run <code>python3 update_weight.py</code> in this folder, then reload.</p>';
+    }
+    return;
+  }
+
+  /* Units and formatting */
+  const LB_PER_KG = 2.20462;
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  let unit = 'kg';
+  try { if (localStorage.getItem('craving-weight-unit') === 'lb') unit = 'lb'; } catch (e) {}
+  const conv = (kg) => (unit === 'lb' ? kg * LB_PER_KG : kg);
+  const massNum = (kg) => conv(kg).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const mass = (kg) => `${massNum(kg)} ${unit}`;
+  const signedMass = (kg) => {
+    const rounded = +conv(Math.abs(kg)).toFixed(1);
+    return rounded === 0 ? `0.0 ${unit}` : `${kg > 0 ? '+' : '−'}${rounded.toFixed(1)} ${unit}`;
+  };
+  const int = (v) => Math.round(v).toLocaleString('en-US');
+  const toDate = (iso) => { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d); };
+  const addDays = (date, n) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + n);
+  const dayLabel = (date) => `${MONTHS[date.getMonth()]} ${date.getDate()}`;
+  const fullDate = (date) => `${dayLabel(date)}, ${date.getFullYear()}`;
+  const monthYear = (date) => `${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+
+  /* Body numbers. BMI, then body fat from the CUN-BAE equation (Gómez-Ambrosi et al., Diabetes Care 2012), which works from BMI, age and sex */
+  const { age: AGE, heightCm: HEIGHT_CM } = W.profile;
+  const HEIGHT_M2 = (HEIGHT_CM / 100) ** 2;
+  const bmiOf = (kg) => kg / HEIGHT_M2;
+  const bodyFat = (kg) => {
+    const b = bmiOf(kg);
+    return -44.988 + 0.503 * AGE + 3.172 * b - 0.026 * b * b - 0.02 * b * AGE + 0.00021 * b * b * AGE;
+  };
+  const bmiClass = (b) => (b >= 40 ? 'Obesity class III' : b >= 35 ? 'Obesity class II' : b >= 30 ? 'Obesity class I' : b >= 25 ? 'Overweight' : b >= 18.5 ? 'Healthy weight' : 'Underweight');
+
+  /* Energy model. The same three burn formulas are in update_weight.py, which measures calibration.offset from your logged weeks */
+  const KCAL_PER_KG = 7700;
+  const REST_BASE = 6.25 * HEIGHT_CM - 5 * AGE + 5;
+  const stepRate = (steps) => LB_PER_KG * 0.57 * 0.00046666666 * steps;
+  const cycleRate = (minutes) => (6.8 * 3.5 * minutes) / 200;
+  const burnPerKg = (plan) => 10 + stepRate(plan.steps) + cycleRate(plan.cycling);
+  const burnAt = (kg, plan, shift = 0) => burnPerKg(plan) * kg + REST_BASE + W.calibration.offset + shift;
+  // Burn falls as weight falls, so these habits settle at the weight where burn equals what you eat
+  const settleKg = (plan) => (plan.kcal - REST_BASE - W.calibration.offset) / burnPerKg(plan);
+
+  const weeks = W.weeks;
+  const latest = weeks[weeks.length - 1];
+  const startDate = toDate(latest.start);
+  const MAX_DAYS = 3650;
+
+  function simulate(plan, shift = 0) {
+    const path = [latest.kg];
+    let kg = latest.kg;
+    for (let day = 1; day <= MAX_DAYS; day++) {
+      kg += (plan.kcal - burnAt(kg, plan, shift)) / KCAL_PER_KG;
+      path.push(kg);
+    }
+    return path;
+  }
+  const dayReached = (path, target) => {
+    const i = path.findIndex((kg) => kg <= target);
+    return i < 0 ? null : i;
+  };
+
+  /* Shared chart: weekly bars or a line, one axis, hover and keyboard readout */
+  const make = (tag, attrs, parent) => {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    if (parent) parent.appendChild(el);
+    return el;
+  };
+  const barPath = (x, y0, y1, w, r) => {
+    const h = Math.abs(y1 - y0);
+    r = Math.min(r, w / 2, h);
+    if (y1 <= y0) return `M${x},${y0}V${y1 + r}Q${x},${y1} ${x + r},${y1}H${x + w - r}Q${x + w},${y1} ${x + w},${y1 + r}V${y0}Z`;
+    return `M${x},${y0}V${y1 - r}Q${x},${y1} ${x + r},${y1}H${x + w - r}Q${x + w},${y1} ${x + w},${y1 - r}V${y0}Z`;
+  };
+  const niceScale = (lo, hi, count = 4) => {
+    const raw = Math.max(hi - lo, 1e-6) / count;
+    const p = 10 ** Math.floor(Math.log10(raw));
+    const step = [1, 2, 2.5, 5, 10].map((s) => s * p).find((s) => s >= raw);
+    return { step, top: Math.ceil(hi / step - 1e-9) * step, bottom: Math.floor(lo / step + 1e-9) * step };
+  };
+
+  function makeChart(box, opts) {
+    const svg = make('svg', { tabindex: 0, role: 'group', 'aria-label': `${opts.label}. Use the left and right arrow keys to read each week.` }, box);
+    const tip = document.createElement('div');
+    tip.className = 'tip';
+    box.appendChild(tip);
+    let geo = null, active = null, marks = [], hoverDot = null, hair = null, data = null;
+
+    function render() {
+      const W2 = box.clientWidth;
+      if (!W2) return;
+      data = opts.series();
+      const { mode, dates, values } = data;
+      const H = opts.height ? opts.height(W2) : (W2 < 560 ? 220 : 260);
+      const known = values.filter((v) => v != null);
+      const refs = data.refs || [];
+      const all = [...known, ...refs.map((r) => r.v)];
+      const lo = mode === 'bar' ? Math.min(0, ...all) : Math.min(...all);
+      const hi = mode === 'bar' ? Math.max(0, ...all) : Math.max(...all);
+      const { step, top, bottom } = niceScale(lo, hi);
+      const ticks = [];
+      for (let v = bottom; v <= top + step / 1000; v += step) ticks.push(v);
+      const labels = ticks.map((v) => data.axis(Math.abs(v) < step / 1000 ? 0 : v));
+      const ml = Math.max(...labels.map((t) => t.length)) * 6.6 + 12;
+      const mt = 18, mb = 26, mr = data.rightMargin || (mode === 'line' ? 12 : 4);
+      const pw = W2 - ml - mr, ph = H - mt - mb, n = values.length;
+      const band = pw / n;
+      const xAt = (i) => ml + (i + 0.5) * band;
+      const yAt = (v) => mt + ((top - v) / (top - bottom)) * ph;
+      geo = { ml, mt, band, W: W2, n, xAt, yAt };
+
+      svg.replaceChildren();
+      svg.setAttribute('viewBox', `0 0 ${W2} ${H}`);
+      svg.setAttribute('height', H);
+      ticks.forEach((v, t) => {
+        const isZero = Math.abs(v) < step / 1000;
+        make('line', { class: isZero ? 'baseline' : 'gridline', x1: ml, x2: W2 - mr, y1: yAt(v), y2: yAt(v) }, svg);
+        make('text', { class: 'axis', x: ml - 8, y: yAt(v), dy: '0.32em', 'text-anchor': 'end' }, svg).textContent = labels[t];
+      });
+
+      // Month labels on the first week of each month, thinned out so they never touch
+      const pxPerMonth = band * 4.35;
+      const everyMonths = [1, 2, 3, 6, 12].find((k) => k * pxPerMonth >= 58) || 12;
+      let lastX = -Infinity;
+      dates.forEach((d, i) => {
+        const isFirst = i === 0 || d.getMonth() !== dates[i - 1].getMonth();
+        if (!isFirst || d.getMonth() % everyMonths) return;
+        const withYear = lastX === -Infinity || d.getMonth() === 0;
+        const x = xAt(i);
+        if (x - lastX < (withYear ? 52 : 40)) return;
+        lastX = x;
+        make('text', { class: 'axis', x, y: H - 6, 'text-anchor': 'middle' }, svg).textContent =
+          withYear ? `${MONTHS[d.getMonth()]} '${String(d.getFullYear()).slice(2)}` : MONTHS[d.getMonth()];
+      });
+
+      for (const r of refs) {
+        make('line', { class: 'ref', x1: ml, x2: W2 - mr, y1: yAt(r.v), y2: yAt(r.v) }, svg);
+        make('text', { class: 'ref-label', x: W2 - mr + 6, y: yAt(r.v), dy: '0.32em' }, svg).textContent = r.label;
+      }
+
+      marks = [];
+      hair = null;
+      hoverDot = null;
+      if (mode === 'line') {
+        const pts = values.map((v, i) => [xAt(i), yAt(v)]);
+        const split = data.split == null ? n : data.split;
+        const d = (from, to) => 'M' + pts.slice(from, to).map((p) => p.join(',')).join('L');
+        make('path', { class: 'line', d: d(0, split), stroke: 'var(--g1)' }, svg);
+        if (split < n) make('path', { class: 'line proj', d: d(split - 1, n), stroke: 'var(--g1)' }, svg);
+        hair = make('line', { class: 'hair', y1: mt, y2: mt + ph, visibility: 'hidden' }, svg);
+        hoverDot = make('circle', { class: 'dot', r: 5, fill: 'var(--g1)', visibility: 'hidden' }, svg);
+        for (const c of data.callouts || []) {
+          const [x, y] = pts[c.i];
+          make('circle', { class: 'dot', cx: x, cy: y, r: 4, fill: 'var(--g1)' }, svg);
+          const nearRight = x > W2 - mr - 60, nearLeft = x < ml + 40;
+          make('text', {
+            class: 'callout', x: nearRight ? x - 6 : nearLeft ? x + 2 : x, y: y + (c.below ? 18 : -10),
+            'text-anchor': nearRight ? 'end' : nearLeft ? 'start' : 'middle',
+          }, svg).textContent = c.text;
+        }
+      } else {
+        const bw = Math.min(20, Math.max(3, band - Math.max(2, band * 0.3)));
+        values.forEach((v, i) => {
+          const x = ml + i * band + (band - bw) / 2;
+          marks.push(make('path', {
+            class: 'bar', d: v ? barPath(x, yAt(0), yAt(v), bw, Math.min(4, bw / 2)) : '',
+            fill: data.fill(i, v), 'fill-opacity': data.faded && data.faded(i) ? 0.4 : 1,
+          }, svg));
+        });
+      }
+      setActive(active != null && document.activeElement === svg ? Math.min(active, n - 1) : null);
+    }
+
+    function setActive(i) {
+      active = i;
+      marks.forEach((mk, j) => mk.classList.toggle('dim', i != null && j !== i));
+      if (hair) {
+        hair.setAttribute('visibility', i == null ? 'hidden' : 'visible');
+        hoverDot.setAttribute('visibility', i == null ? 'hidden' : 'visible');
+      }
+      if (i == null || !geo) { tip.classList.remove('show'); return; }
+      const cx = geo.xAt(i);
+      if (hair) {
+        hair.setAttribute('x1', cx);
+        hair.setAttribute('x2', cx);
+        hoverDot.setAttribute('cx', cx);
+        hoverDot.setAttribute('cy', geo.yAt(data.values[i]));
+      }
+      const t = opts.tip(i);
+      tip.replaceChildren();
+      const h = document.createElement('div');
+      h.className = 'tip-h';
+      h.textContent = t.head;
+      const tot = document.createElement('div');
+      tot.className = 'tip-total';
+      tot.textContent = t.value;
+      tip.append(h, tot);
+      for (const r of t.rows) {
+        const row = document.createElement('div');
+        row.className = 'tip-row';
+        const key = document.createElement('i');
+        const b = document.createElement('b');
+        b.textContent = r.value;
+        const s = document.createElement('span');
+        s.textContent = r.label;
+        row.append(key, b, s);
+        tip.appendChild(row);
+      }
+      if (!t.rows.length) tot.style.marginBottom = '0';
+      const tw = tip.offsetWidth;
+      let left = cx + 14;
+      if (left + tw > geo.W) left = cx - 14 - tw;
+      tip.style.left = Math.max(0, left) + 'px';
+      tip.style.top = geo.mt + 'px';
+      tip.classList.add('show');
+    }
+    const pick = (ev) => {
+      if (!geo) return;
+      const i = Math.floor((ev.clientX - svg.getBoundingClientRect().left - geo.ml) / geo.band);
+      if (i >= 0 && i < geo.n && i !== active) setActive(i);
+    };
+    svg.addEventListener('pointerdown', pick);
+    svg.addEventListener('pointermove', pick);
+    svg.addEventListener('pointerleave', (ev) => { if (ev.pointerType === 'mouse' && document.activeElement !== svg) setActive(null); });
+    document.addEventListener('pointerdown', (ev) => { if (active != null && !svg.contains(ev.target) && document.activeElement !== svg) setActive(null); });
+    svg.addEventListener('focus', () => setActive(active ?? (geo ? geo.n - 1 : null)));
+    svg.addEventListener('blur', () => setActive(null));
+    svg.addEventListener('keydown', (ev) => {
+      if (!geo) return;
+      const last = geo.n - 1;
+      let next = null;
+      if (ev.key === 'ArrowLeft') next = Math.max(0, (active ?? last) - 1);
+      else if (ev.key === 'ArrowRight') next = Math.min(last, (active ?? last) + 1);
+      else if (ev.key === 'Home') next = 0;
+      else if (ev.key === 'End') next = last;
+      else if (ev.key === 'Escape') { svg.blur(); return; }
+      if (next == null) return;
+      ev.preventDefault();
+      setActive(next);
+    });
+    let raf = 0;
+    new ResizeObserver(() => { cancelAnimationFrame(raf); raf = requestAnimationFrame(render); }).observe(box);
+    return { render };
+  }
+
+  const fillTiles = (box, tiles) => {
+    box.replaceChildren();
+    for (const t of tiles) {
+      const el = document.createElement('div');
+      el.className = 'card tile';
+      el.innerHTML = '<div class="tile-label"></div><div class="tile-val"></div><div class="tile-sub"></div>';
+      el.querySelector('.tile-label').textContent = t.label;
+      const val = el.querySelector('.tile-val');
+      val.textContent = t.val;
+      if (t.small) { const s = document.createElement('small'); s.textContent = t.small; val.appendChild(s); }
+      el.querySelector('.tile-sub').textContent = t.sub;
+      box.appendChild(el);
+    }
+  };
+  const addCells = (tr, heads, cells) => {
+    cells.forEach((c, j) => {
+      const td = document.createElement('td');
+      if (j > 0) { td.className = 'num'; td.dataset.label = heads[j]; }
+      td.textContent = c;
+      tr.appendChild(td);
+    });
+  };
+  const headsOf = (selector) => [...document.querySelectorAll(`${selector} thead th`)].map((th) => th.textContent);
+
+  /* ---------- Weight tab ---------- */
+  const dates = weeks.map((w) => toDate(w.start));
+  const lowest = weeks.reduce((a, b) => (b.kg < a.kg ? b : a));
+  const first = weeks[0];
+  const done = weeks.filter((w) => w.change != null);
+  const weekSo = (w) => (w.days < 7 ? ' (so far)' : '');
+  const weekHead = (i) => `Week of ${fullDate(dates[i])}${weekSo(weeks[i])}`;
+  let showAllWeeks = false;
+
+  const habitRows = (w) => [
+    { label: 'calories a day' + (w.estimated ? ' (estimated)' : ''), value: w.kcal == null ? '—' : int(w.kcal) },
+    { label: 'steps a day', value: w.steps == null ? '—' : int(w.steps) },
+    { label: 'cycling', value: `${int(w.cyclingMin)} min` },
+  ];
+
+  const chartWeight = makeChart($('wtWeight'), {
+    label: 'Weight each week',
+    series: () => {
+      const low = weeks.indexOf(lowest);
+      return {
+        mode: 'line', dates, values: weeks.map((w) => conv(w.kg)), axis: (v) => int(v),
+        callouts: [
+          { i: 0, text: massNum(first.kg) },
+          ...(low > 0 && low < weeks.length - 1 ? [{ i: low, text: massNum(lowest.kg), below: true }] : []),
+          { i: weeks.length - 1, text: massNum(latest.kg) },
+        ],
+      };
+    },
+    tip: (i) => ({
+      head: fullDate(dates[i]),
+      value: mass(weeks[i].kg),
+      rows: [
+        { label: 'BMI', value: bmiOf(weeks[i].kg).toFixed(1) },
+        ...(i > 0 ? [{ label: 'from the week before', value: signedMass(weeks[i].kg - weeks[i - 1].kg) }] : []),
+      ],
+    }),
+  });
+
+  const chartChange = makeChart($('wtChange'), {
+    label: 'Weight lost or gained each week',
+    series: () => ({
+      mode: 'bar', dates, values: weeks.map((w) => (w.change == null ? null : conv(w.change))),
+      axis: (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(+v.toFixed(1)),
+      fill: (i, v) => (v > 0 ? 'var(--g2)' : 'var(--g1)'),
+    }),
+    tip: (i) => {
+      const w = weeks[i];
+      if (w.change == null) return { head: weekHead(i), value: 'Waiting on the next weigh-in', rows: habitRows(w) };
+      const word = w.change > 0 ? 'Gained' : w.change < 0 ? 'Lost' : 'No change';
+      return { head: weekHead(i), value: w.change ? `${word} ${mass(Math.abs(w.change))}` : word, rows: habitRows(w) };
+    },
+  });
+
+  const shortHeight = (width) => (width < 560 ? 180 : 210);
+  const chartKcal = makeChart($('wtKcal'), {
+    label: 'Calories eaten per day, averaged by week',
+    height: shortHeight,
+    series: () => ({
+      mode: 'bar', dates, values: weeks.map((w) => w.kcal), axis: (v) => int(v),
+      fill: () => 'var(--g1)', faded: (i) => weeks[i].estimated,
+    }),
+    tip: (i) => {
+      const w = weeks[i];
+      const m = w.macros;
+      const rows = m ? [
+        { label: 'carbs a day', value: `${int(m.carbs)} g` },
+        { label: 'protein a day', value: `${int(m.protein)} g` },
+        { label: 'fat a day', value: `${int(m.fat)} g` },
+      ] : [];
+      if (m && m.alcoholKcal) rows.push({ label: 'a day from alcohol', value: `${int(m.alcoholKcal)} kcal` });
+      if (w.estimated) rows.push({ label: 'days estimated', value: String(w.repeatedDays) });
+      return { head: weekHead(i), value: w.kcal == null ? 'Not logged' : `${int(w.kcal)} kcal a day`, rows };
+    },
+  });
+  const chartSteps = makeChart($('wtSteps'), {
+    label: 'Steps per day, averaged by week',
+    height: shortHeight,
+    series: () => ({ mode: 'bar', dates, values: weeks.map((w) => w.steps), axis: (v) => int(v), fill: () => 'var(--g1)' }),
+    tip: (i) => ({ head: weekHead(i), value: weeks[i].steps == null ? 'Not logged' : `${int(weeks[i].steps)} steps a day`, rows: [] }),
+  });
+  const chartCycle = makeChart($('wtCycle'), {
+    label: 'Cycling minutes per week',
+    height: shortHeight,
+    series: () => ({ mode: 'bar', dates, values: weeks.map((w) => w.cyclingMin), axis: (v) => int(v), fill: () => 'var(--g1)' }),
+    tip: (i) => ({
+      head: weekHead(i),
+      value: weeks[i].cyclingMin ? `${int(weeks[i].cyclingMin)} min` : 'No cycling',
+      rows: weeks[i].cyclingMin ? [{ label: 'days cycled', value: String(weeks[i].cyclingDays) }] : [],
+    }),
+  });
+
+  function renderWeightTab() {
+    const total = latest.kg - first.kg;
+    const pace = W.trend.kgPerWeek;
+    $('wtLede').textContent = `${weeks.length} Sunday weigh-ins from ${fullDate(dates[0])} to ${fullDate(toDate(latest.start))}, next to what you ate and how much you moved each week.`;
+    fillTiles($('wtTiles'), [
+      { label: 'Current weight', val: massNum(latest.kg), small: unit, sub: `Weighed ${fullDate(toDate(latest.start))}` },
+      { label: `Since ${dayLabel(dates[0])}`, val: signedMass(total).split(' ')[0], small: unit, sub: `From ${mass(first.kg)} at the start` },
+      { label: 'Recent pace', val: signedMass(pace).split(' ')[0], small: `${unit}/wk`, sub: `Trend across the last ${W.trend.weeks} weigh-ins` },
+      { label: 'Lowest weight', val: massNum(lowest.kg), small: unit, sub: `${fullDate(toDate(lowest.start))}, ${mass(latest.kg - lowest.kg)} ago` },
+    ]);
+    $('wtWeightSub').textContent = `In ${unit === 'kg' ? 'kilograms' : 'pounds'}. The labels mark where you started, your lowest and your latest.`;
+
+    const up = done.filter((w) => w.change > 0).length;
+    const down = done.filter((w) => w.change < 0).length;
+    const drop = done.reduce((a, b) => (b.change < a.change ? b : a));
+    const gain = done.reduce((a, b) => (b.change > a.change ? b : a));
+    $('wtChangeSub').textContent = `In ${unit}. ${down} weeks down, ${up} up. Biggest drop ${mass(Math.abs(drop.change))} (week of ${dayLabel(toDate(drop.start))}), biggest gain ${mass(gain.change)} (week of ${dayLabel(toDate(gain.start))}).`;
+
+    const cycled = weeks.filter((w) => w.cyclingMin > 0);
+    $('wtCycleSub').textContent = cycled.length ? `${cycled.length} of ${weeks.length} weeks had some cycling, ${int(weeks.reduce((s, w) => s + w.cyclingMin, 0))} minutes in all.` : 'No cycling logged yet.';
+
+    const heads = headsOf('.wt-weeks');
+    const rows = [...weeks].reverse();
+    const shown = showAllWeeks ? rows : rows.slice(0, 8);
+    $('wtRows').replaceChildren();
+    for (const w of shown) {
+      const tr = document.createElement('tr');
+      addCells(tr, heads, [
+        fullDate(toDate(w.start)) + (w.days < 7 ? ' (so far)' : ''),
+        mass(w.kg),
+        w.change == null ? '—' : signedMass(w.change),
+        w.kcal == null ? '—' : int(w.kcal) + (w.estimated ? ' †' : ''),
+        w.steps == null ? '—' : int(w.steps),
+        w.cyclingMin ? `${int(w.cyclingMin)} min` : '—',
+      ]);
+      $('wtRows').appendChild(tr);
+    }
+    $('wtMore').textContent = showAllWeeks ? 'Show the latest 8 weeks' : `Show all ${weeks.length} weeks`;
+    $('wtFine').textContent = `† The same calorie total repeats for 5 or more days in a row in this week, so it's marked as an estimate. That covers ${W.repeats.days} of the ${W.repeats.of} days so far.`;
+    [chartWeight, chartChange, chartKcal, chartSteps, chartCycle].forEach((c) => c.render());
+  }
+  $('wtMore').addEventListener('click', () => { showAllWeeks = !showAllWeeks; renderWeightTab(); });
+
+  /* The macro split each food uses */
+  const macroHeads = headsOf('.mac-table');
+  const macroDefault = W.macros.default;
+  const assumedFoods = W.macros.assumed;
+  $('wtMacroHow').textContent = `Each food's calories are split into carbs, protein and fat using the shares below, then turned into grams at 4 kcal per gram of carbs or protein and 9 kcal per gram of fat. The shares are typical values for each food, not measurements. Alcohol has its own calories, so it's shown separately. A new food column uses the ${macroDefault} split until it gets its own row in update_weight.py.` + (assumedFoods.length ? ` Using the ${macroDefault} split for now: ${assumedFoods.join(', ')}.` : '');
+  for (const f of W.macros.foods) {
+    const tr = document.createElement('tr');
+    addCells(tr, macroHeads, [f.food, `${f.carbs}%`, `${f.protein}%`, `${f.fat}%`, f.alcohol ? `${f.alcohol}%` : '—']);
+    $('wtMacroRows').appendChild(tr);
+  }
+
+  $('wtUpdate').prepend(`Data last pulled ${fullDate(toDate(W.generated))}. `);
+
+  /* ---------- Goals tab ---------- */
+  const GOALS = [120, 100, 80];
+  const BMI_STEPS = [
+    { bmi: 40, name: 'BMI under 40: class II obesity' },
+    { bmi: 35, name: 'BMI under 35: class I obesity' },
+    { bmi: 30, name: 'BMI under 30: overweight' },
+    { bmi: 25, name: 'BMI under 25: healthy weight' },
+  ];
+  const UNCERTAINTY = 200;
+  const snap = (v, step) => Math.round(v / step) * step;
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const snapPlan = (kcal, steps, cycling) => ({
+    kcal: clamp(snap(kcal, 50), 1500, 4500), steps: clamp(snap(steps, 500), 0, 25000), cycling: clamp(snap(cycling, 5), 0, 120),
+  });
+  const PRESETS = [
+    { id: 'current', label: 'Current habits', plan: snapPlan(W.habits.kcal, W.habits.steps, W.habits.cycling),
+      note: () => `your average for the last ${W.habits.days} days` },
+    { id: 'steady', label: 'A steady plan', plan: snapPlan(2200, 10000, 20), note: () => 'an example between your current habits and your best stretch' },
+  ];
+  if (W.best) {
+    PRESETS.push({ id: 'best', label: 'Your best stretch', plan: snapPlan(W.best.kcal, W.best.steps, W.best.cycling),
+      note: () => `what you averaged from ${dayLabel(toDate(W.best.from))} to ${dayLabel(toDate(W.best.to))}, when you lost ${mass(Math.abs(W.best.kg))} in ${Math.round((toDate(W.best.to) - toDate(W.best.from)) / 864e5 + 1) / 7} weeks` });
+  }
+  let plan = { ...PRESETS[0].plan };
+  let presetId = 'current';
+
+  for (const p of PRESETS) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.dataset.preset = p.id;
+    b.textContent = p.label;
+    b.addEventListener('click', () => { plan = { ...p.plan }; presetId = p.id; renderGoals(); });
+    $('glPresets').appendChild(b);
+  }
+  [['glKcal', 'kcal'], ['glSteps', 'steps'], ['glCycle', 'cycling']].forEach(([id, key]) => {
+    $(id).addEventListener('input', (ev) => {
+      plan = { ...plan, [key]: +ev.target.value };
+      const match = PRESETS.find((p) => ['kcal', 'steps', 'cycling'].every((k) => p.plan[k] === plan[k]));
+      presetId = match ? match.id : null;
+      renderGoals();
+    });
+  });
+
+  let chartPath = [];
+  let chartHorizon = 0;
+  const goalLabel = (kg) => (unit === 'kg' ? `${kg} kg` : `${int(kg * LB_PER_KG)} lb`);
+  const projDate = (days) => addDays(startDate, days);
+  const durationText = (days) => {
+    if (days < 70) return `${Math.round(days / 7)} weeks away`;
+    const months = days / 30.44;
+    if (months < 24) return `${Math.round(months)} months away`;
+    return `${(days / 365.25).toFixed(1)} years away`;
+  };
+
+  const chartGoal = makeChart($('glChart'), {
+    label: 'Weight so far and projected weight',
+    height: (width) => (width < 560 ? 280 : 340),
+    series: () => {
+      const future = [];
+      for (let d = 7; d <= chartHorizon; d += 7) future.push({ date: projDate(d), kg: chartPath[d] });
+      const callouts = [];
+      for (const g of GOALS) {
+        const day = dayReached(chartPath, g);
+        if (day != null && day <= chartHorizon && latest.kg > g) {
+          callouts.push({ i: weeks.length - 1 + Math.max(1, Math.round(day / 7)), text: monthYear(projDate(day)) });
+        }
+      }
+      return {
+        mode: 'line',
+        dates: [...dates, ...future.map((f) => f.date)],
+        values: [...weeks.map((w) => conv(w.kg)), ...future.map((f) => conv(f.kg))],
+        split: weeks.length,
+        axis: (v) => int(v),
+        refs: GOALS.map((g) => ({ v: conv(g), label: goalLabel(g) })),
+        rightMargin: 56,
+        callouts,
+      };
+    },
+    tip: (i) => {
+      const past = i < weeks.length;
+      const kg = past ? weeks[i].kg : chartPath[(i - weeks.length + 1) * 7];
+      const date = past ? dates[i] : projDate((i - weeks.length + 1) * 7);
+      return {
+        head: `${fullDate(date)}${past ? '' : ' (projected)'}`,
+        value: mass(kg),
+        rows: [
+          { label: 'BMI', value: bmiOf(kg).toFixed(1) },
+          { label: 'body fat (est.)', value: `${Math.round(bodyFat(kg))}%` },
+        ],
+      };
+    },
+  });
+
+  function renderGoals() {
+    $('glHeroGoals').textContent = unit === 'kg' ? '120, 100 and 80 kg' : `${int(120 * LB_PER_KG)}, ${int(100 * LB_PER_KG)} and ${int(80 * LB_PER_KG)} lb`;
+    const bmi = bmiOf(latest.kg), fat = bodyFat(latest.kg);
+    const nowPlan = PRESETS[0].plan;
+    const nowBurn = burnAt(latest.kg, nowPlan);
+    fillTiles($('glTiles'), [
+      { label: 'Current BMI', val: bmi.toFixed(1), sub: `${bmiClass(bmi)} at ${HEIGHT_CM} cm` },
+      { label: 'Body fat (est.)', val: `${fat.toFixed(0)}%`, sub: `About ${mass((fat / 100) * latest.kg)} of fat, give or take 5 points` },
+      { label: 'Burned at rest', val: int(10 * latest.kg + REST_BASE), small: 'kcal', sub: `Age ${AGE}, male, ${mass(latest.kg)}` },
+      { label: 'Burned per day', val: int(nowBurn), small: 'kcal', sub: `Calibrated to your scale, at ${int(nowPlan.steps)} steps a day` },
+    ]);
+    $('glLede').textContent = `Worked out from what you eat, your steps and cycling, how your weight has actually responded, and your age and height. Starts from ${mass(latest.kg)} on ${fullDate(startDate)}.`;
+
+    $('glKcal').value = plan.kcal;
+    $('glSteps').value = plan.steps;
+    $('glCycle').value = plan.cycling;
+    $('glKcalVal').textContent = `${int(plan.kcal)} kcal`;
+    $('glStepsVal').textContent = int(plan.steps);
+    $('glCycleVal').textContent = `${plan.cycling} min`;
+    [...$('glPresets').children].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.preset === presetId)));
+
+    const path = simulate(plan);
+    const fast = simulate(plan, UNCERTAINTY);
+    const slow = simulate(plan, -UNCERTAINTY);
+    const burn = burnAt(latest.kg, plan);
+    const balance = plan.kcal - burn;
+    const perWeek = (balance * 7) / KCAL_PER_KG;
+    const settle = settleKg(plan);
+
+    const bal = $('glBalance');
+    bal.replaceChildren();
+    for (const [v, l] of [[`${int(plan.kcal)} kcal`, 'eaten per day'], [`${int(burn)} kcal`, 'burned per day today'], [`${balance > 0 ? '+' : '−'}${int(Math.abs(balance))} kcal`, balance > 0 ? 'daily surplus' : 'daily deficit']]) {
+      const d = document.createElement('div');
+      const b = document.createElement('b');
+      b.textContent = v;
+      d.append(b, l);
+      bal.appendChild(d);
+    }
+
+    const preset = PRESETS.find((p) => p.id === presetId);
+    const intro = preset ? `This is ${preset.note()}. ` : '';
+    let verdict;
+    if (perWeek > 0.05) {
+      verdict = `${intro}On these numbers you gain about ${mass(perWeek)} a week, so none of these goal dates arrive. Your scale agrees: it has been moving ${signedMass(W.trend.kgPerWeek)} a week over the last ${W.trend.weeks} weigh-ins.`;
+    } else if (perWeek > -0.05) {
+      verdict = `${intro}These numbers about hold your weight steady, so none of these goal dates arrive.`;
+    } else {
+      verdict = `${intro}These numbers lose about ${mass(-perWeek)} a week at first, then slow down as a lighter body burns less. Kept up forever, they level off near ${mass(settle)}.`;
+      if (-perWeek > latest.kg * 0.01) verdict += ' That first pace is above 1% of your body weight a week, which is hard to keep up for long.';
+    }
+    $('glVerdict').textContent = verdict;
+
+    const missText = (target) => {
+      if (perWeek > 0.05) return 'Not on this path';
+      if (settle > target) return 'Not on this path';
+      return 'Over 10 years away';
+    };
+    const missWhy = (target) => {
+      if (perWeek > 0.05) return `These habits add weight. You'd be near ${mass(path[365])} a year from now.`;
+      if (settle > target) return `These habits level off near ${mass(settle)}, above this goal.`;
+      return 'These habits get there very slowly, because the deficit nearly closes before you arrive.';
+    };
+
+    /* Goal cards */
+    const cards = $('glCards');
+    cards.replaceChildren();
+    for (const g of GOALS) {
+      const card = document.createElement('section');
+      card.className = 'card gl-card';
+      const label = document.createElement('div');
+      label.className = 'tile-label';
+      label.textContent = `Reach ${goalLabel(g)}`;
+      const val = document.createElement('div');
+      val.className = 'tile-val';
+      const add = (text, cls) => {
+        const el = document.createElement('div');
+        el.className = `gl-line ${cls || ''}`;
+        el.textContent = text;
+        card.appendChild(el);
+      };
+      card.append(label, val);
+      const hold = burnPerKg(plan) * g + REST_BASE + W.calibration.offset;
+      const stats = `BMI ${bmiOf(g).toFixed(1)} · about ${Math.round(bodyFat(g))}% body fat`;
+      if (latest.kg <= g) {
+        val.textContent = 'Reached';
+        add(stats, 'gl-stats');
+      } else {
+        const day = dayReached(path, g);
+        if (day != null) {
+          val.textContent = fullDate(projDate(day));
+          add(durationText(day), 'gl-stats');
+          add(stats, 'gl-stats');
+          const a = dayReached(fast, g), b = dayReached(slow, g);
+          add(b != null ? `Likely between ${monthYear(projDate(a))} and ${monthYear(projDate(b))}.` : `${monthYear(projDate(a))} at the earliest, and maybe never if you burn less than estimated.`);
+        } else {
+          val.textContent = missText(g);
+          add(stats, 'gl-stats');
+          add(missWhy(g));
+        }
+        add(`Staying at this weight takes about ${int(hold)} kcal a day at this activity.`);
+      }
+      cards.appendChild(card);
+    }
+
+    /* Milestone table */
+    const heads = headsOf('.gl-table');
+    const rows = [
+      ...GOALS.map((g) => ({ kg: g, name: `Goal: ${goalLabel(g)}`, goal: true })),
+      ...BMI_STEPS.map((s) => ({ kg: s.bmi * HEIGHT_M2, name: s.name })),
+    ].sort((a, b) => b.kg - a.kg);
+    $('glRows').replaceChildren();
+    const nowTr = document.createElement('tr');
+    nowTr.className = 'now-row';
+    addCells(nowTr, heads, ['Latest weigh-in', mass(latest.kg), bmi.toFixed(1), `${Math.round(fat)}%`, '—', fullDate(startDate)]);
+    $('glRows').appendChild(nowTr);
+    for (const r of rows) {
+      const tr = document.createElement('tr');
+      if (r.goal) tr.className = 'goal-row';
+      const day = dayReached(path, r.kg);
+      const reached = latest.kg <= r.kg;
+      addCells(tr, heads, [
+        r.name, mass(r.kg), bmiOf(r.kg).toFixed(1), `${Math.round(bodyFat(r.kg))}%`,
+        reached ? 'Done' : mass(latest.kg - r.kg),
+        reached ? 'Reached' : day != null ? fullDate(projDate(day)) : '—',
+      ]);
+      $('glRows').appendChild(tr);
+    }
+
+    /* Chart: show the whole trip to the furthest goal these habits reach, at least two years */
+    const reachedDays = GOALS.map((g) => dayReached(path, g)).filter((d) => d != null);
+    chartPath = path;
+    chartHorizon = Math.min(MAX_DAYS, Math.max(730, reachedDays.length ? Math.max(...reachedDays) + 112 : 0));
+    chartGoal.render();
+  }
+
+  const offset = W.calibration.offset;
+  const check = W.calibration.check;
+  const buildNotes = () => [
+    { title: 'What you burn', body: `starts from the formulas already in your sheet: Mifflin-St Jeor at rest (age ${AGE}, male, ${HEIGHT_CM} cm), your step formula and your cycling formula. As you lose weight, all three drop, which is why progress slows. The daily surplus or deficit becomes weight at 7,700 kcal per kg.` },
+    { title: 'Calibration to your scale.', body: `Those formulas alone don't match how your weight actually moved. On the ${W.calibration.weeks} weeks with real daily logs, the gap averages ${offset < 0 ? '−' : '+'}${int(Math.abs(offset))} kcal a day, so every burn figure here includes it. It may be burn that's lower than the formulas say, calories that are higher than logged, or both.${check ? ` As a test, fitting only on the earlier logs predicted ${signedMass(check.predicted)} for the ${check.weeks} weeks from ${dayLabel(toDate(check.from))}. The scale showed ${signedMass(check.actual)}.` : ''}` },
+    { title: 'Estimated weeks are left out of that calibration.', body: `${W.repeats.days} of ${W.repeats.of} logged days repeat one calorie total for 5 or more days. The scale doesn't support those totals, so they're charted but not used to fit the model.` },
+    { title: 'Dates are estimates.', body: `Each range assumes your true burn could be ${UNCERTAINTY} kcal a day either way. It also assumes you hold the same habits for the whole trip and stay ${AGE}. A real plan would adjust along the way.` },
+    { title: 'Body fat is estimated, not measured.', body: 'It uses the CUN-BAE equation from BMI, age and sex, which has an error of about 4.7 points and assumes a typical build. A DEXA scan would give you a real number. BMI also ignores muscle.' },
+    { title: 'Not medical advice.', body: 'These are projections from a spreadsheet. A doctor or dietitian can check a plan against your health, especially for a big or fast change.' },
+  ];
+  $('glUpdate').prepend(`Data last pulled ${fullDate(toDate(W.generated))}. `);
+
+  /* Unit switch, shared by both tabs */
+  const unitBtns = [...document.querySelectorAll('.wt-unit button')];
+  function renderAll() {
+    unitBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.unit === unit)));
+    renderWeightTab();
+    renderGoals();
+    $('glNotes').replaceChildren();
+    for (const n of buildNotes()) {
+      const li = document.createElement('li');
+      const b = document.createElement('b');
+      b.textContent = n.title + ' ';
+      li.append(b, n.body);
+      $('glNotes').appendChild(li);
+    }
+  }
+  unitBtns.forEach((b) => b.addEventListener('click', () => {
+    unit = b.dataset.unit;
+    try { localStorage.setItem('craving-weight-unit', unit); } catch (e) {}
+    renderAll();
+  }));
+  renderAll();
 })();
 </script>
 <script>
