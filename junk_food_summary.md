@@ -1,6 +1,6 @@
 # Junk food I buy most often
 
-From my expense sheet, Aug 2023 – Nov 3, 2026. Generated 2026-11-04 by `update_sheet.py`.
+From my expense sheet, Aug 2023 – Nov 4, 2026. Generated 2026-11-04 by `update_sheet.py`.
 
 ## Summary table
 
@@ -39,7 +39,7 @@ From my expense sheet, Aug 2023 – Nov 3, 2026. Generated 2026-11-04 by `update
 ## What stands out
 
 - **2026 is much worse than the earlier years.** Of all the purchases since August 2023, 2026 so far has 90 of the 132 biryanis, 80 of the 123 sodas and 33 of the 43 energy drinks. Your junk-food rate went from about 710 kcal/day before 2026 to about 1,320 kcal/day in 2026.
-- **Biryani is the biggest problem.** It's the top item by calories and by money ($2,205 spent), and you've had it about 2.1 times a week in 2026.
+- **Biryani is the biggest problem.** It's the top item by calories and by money ($2,205 spent), and you've had it about 2.0 times a week in 2026.
 - **Drinks add up even though each one seems small.** Sunny D, Soda and Monster together are 240 purchases, about 76,000 kcal or 22 lb.
 - **Takeout is where the money goes.** Biryani, burgers, fried chicken, pizza, Subway and other restaurant meals account for $4,706, 65% of the $7,279 spent on everything in this table.
 

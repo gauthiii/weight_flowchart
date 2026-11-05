@@ -73,6 +73,9 @@ FOOD_MACROS = {
     "Chicken Fajita": (30, 35, 35, 0),
     "Zero Sugar": (100, 0, 0, 0),
     "Red Bull Small": (100, 0, 0, 0),
+    "French Toast": (44, 14, 42, 0),
+    "Grapes": (94, 4, 2, 0),
+    "Rice": (90, 8, 2, 0),
 }
 # A food column that isn't listed above uses this food's split until it gets its own row
 DEFAULT_FOOD = "Biriyani"
