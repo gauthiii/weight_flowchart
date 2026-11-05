@@ -446,6 +446,7 @@
   .gl-balance div { font-size: 12.5px; color: var(--muted); }
   .gl-balance b { display: block; margin-bottom: 2px; font-size: 18px; font-weight: 800; letter-spacing: -0.02em; color: var(--text); font-variant-numeric: tabular-nums; }
   .gl-verdict { margin: 14px 0 0; font-size: 14px; line-height: 1.55; color: var(--text); }
+  .gl-water { margin-top: 18px; max-width: 560px; }
   .gl-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
   .gl-card { padding: 18px 18px 20px; border-radius: 20px; }
   .gl-card .tile-val { font-size: 25px; white-space: normal; line-height: 1.15; }
@@ -959,6 +960,28 @@
           <tbody id="glRows"></tbody>
         </table>
       </div>
+    </section>
+
+    <section class="card tr-card" aria-labelledby="glWaterTitle">
+      <h2 id="glWaterTitle">Water for your weight</h2>
+      <p class="tr-sub" id="glWaterSub"></p>
+      <div class="seg gl-presets" id="glWaterPresets" role="group" aria-label="Weight to compare"></div>
+      <div class="gl-water">
+        <label class="gl-slider"><span>Weight to compare <b id="glWaterKgVal"></b></span><input type="range" id="glWaterKg" step="0.5"></label>
+      </div>
+      <div class="gl-balance" id="glWaterBalance"></div>
+      <p class="gl-verdict" id="glWaterVerdict"></p>
+      <div class="table-wrap">
+        <table class="tr-table wt-table gl-water-table">
+          <thead>
+            <tr>
+              <th>Weight</th><th class="num">Water a day</th><th class="num">Range</th><th class="num">250 ml glasses</th><th class="num">Compared with now</th>
+            </tr>
+          </thead>
+          <tbody id="glWaterRows"></tbody>
+        </table>
+      </div>
+      <p class="fine" id="glWaterFine"></p>
     </section>
 
     <section class="card tr-card" aria-labelledby="glNotesTitle">
@@ -2259,6 +2282,91 @@
     chartPath = path;
     chartHorizon = Math.min(MAX_DAYS, Math.max(730, reachedDays.length ? Math.max(...reachedDays) + 112 : 0));
     chartGoal.render();
+    renderWater();
+  }
+
+  /* Water for your weight: about 35 ml a day per kg, within a common 30 to 40 ml range */
+  const WATER_ML_PER_KG = 35;
+  const WATER_RANGE = [30, 40];
+  const WATER_GLASS_ML = 250;
+  const WATER_EXERCISE_ML_PER_MIN = 12; // about 0.7 L for each hour of exercise
+  const WATER_MEN_GUIDE_ML = 3000; // drinks part of the US National Academies' 3.7 L a day for men
+  const snapMl = (ml) => Math.round(ml / 50) * 50;
+  const waterFor = (kg) => snapMl(kg * WATER_ML_PER_KG);
+  const mlText = (ml) => `${int(ml)} ml`;
+  const litersText = (ml) => `${(ml / 1000).toFixed(1)} L`;
+  const waterKgMin = 60;
+  const waterKgMax = Math.ceil(Math.max(...weeks.map((w) => w.kg)) / 10) * 10 + 10;
+  let waterKg = Math.round(latest.kg * 2) / 2;
+  $('glWaterKg').min = waterKgMin;
+  $('glWaterKg').max = waterKgMax;
+  const waterPresets = [{ label: 'Current weight', kg: Math.round(latest.kg * 2) / 2 }, ...GOALS.filter((g) => g < latest.kg).map((g) => ({ goal: g, kg: g }))];
+  for (const p of waterPresets) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.dataset.kg = p.kg;
+    b.addEventListener('click', () => { waterKg = p.kg; renderWater(); });
+    $('glWaterPresets').appendChild(b);
+  }
+  $('glWaterKg').addEventListener('input', (ev) => { waterKg = +ev.target.value; renderWater(); });
+
+  function renderWater() {
+    const nowMl = waterFor(latest.kg);
+    const selMl = waterFor(waterKg);
+    const diff = selMl - nowMl;
+    $('glWaterSub').textContent = `About ${WATER_ML_PER_KG} ml of water a day for each kg you weigh (${WATER_RANGE[0]} to ${WATER_RANGE[1]} ml is the usual range). Drag the slider or pick a goal to compare it with what you need now.`;
+    [...$('glWaterPresets').children].forEach((b, i) => {
+      const p = waterPresets[i];
+      b.textContent = p.goal ? `At ${goalLabel(p.goal)}` : p.label;
+      b.setAttribute('aria-pressed', String(p.kg === waterKg));
+    });
+    $('glWaterKg').value = waterKg;
+    $('glWaterKgVal').textContent = mass(waterKg);
+
+    const bal = $('glWaterBalance');
+    bal.replaceChildren();
+    const same = Math.abs(diff) < 50;
+    for (const [v, l] of [
+      [mlText(selMl), `a day at ${mass(waterKg)}`],
+      [mlText(nowMl), `a day now, at ${mass(latest.kg)}`],
+      [same ? 'Same' : `${diff > 0 ? '+' : '−'}${mlText(Math.abs(diff))}`, same ? 'as now' : diff > 0 ? 'more than now' : 'less than now'],
+    ]) {
+      const d = document.createElement('div');
+      const b = document.createElement('b');
+      b.textContent = v;
+      d.append(b, l);
+      bal.appendChild(d);
+    }
+
+    const glasses = Math.round(selMl / WATER_GLASS_ML);
+    let text = `At ${mass(waterKg)}, aim for about ${mlText(selMl)} a day (${litersText(selMl)}, roughly ${glasses} glasses of ${WATER_GLASS_ML} ml), anywhere from ${mlText(snapMl(waterKg * WATER_RANGE[0]))} to ${mlText(snapMl(waterKg * WATER_RANGE[1]))}.`;
+    if (!same) text += ` That's ${mlText(Math.abs(diff))} ${diff > 0 ? 'more' : 'less'} than at your current weight, about ${Math.abs(Math.round(diff / WATER_GLASS_ML))} ${Math.abs(Math.round(diff / WATER_GLASS_ML)) === 1 ? 'glass' : 'glasses'} ${diff > 0 ? 'more' : 'fewer'}.`;
+    text += plan.cycling > 0
+      ? ` On a day with ${plan.cycling} minutes of cycling (from the habits above), add about ${mlText(snapMl(plan.cycling * WATER_EXERCISE_ML_PER_MIN))}.`
+      : ' Add about 700 ml for each hour of exercise, and more on hot days.';
+    $('glWaterVerdict').textContent = text;
+
+    const heads = headsOf('.gl-water-table');
+    const rows = [{ name: 'Latest weigh-in', kg: latest.kg, now: true }, ...GOALS.map((g) => ({ name: `Goal: ${goalLabel(g)}`, kg: g, goal: true }))];
+    if (!rows.some((r) => Math.abs(r.kg - waterKg) < 0.25)) rows.push({ name: 'On the slider', kg: waterKg });
+    rows.sort((a, b) => b.kg - a.kg);
+    $('glWaterRows').replaceChildren();
+    for (const r of rows) {
+      const ml = waterFor(r.kg);
+      const tr = document.createElement('tr');
+      if (r.now) tr.className = 'now-row';
+      else if (r.goal) tr.className = 'goal-row';
+      if (Math.abs(r.kg - waterKg) < 0.25) tr.classList.add('sel');
+      const d = ml - nowMl;
+      addCells(tr, heads, [
+        r.goal ? r.name : `${r.name} (${mass(r.kg)})`, mlText(ml),
+        `${int(snapMl(r.kg * WATER_RANGE[0]))}–${mlText(snapMl(r.kg * WATER_RANGE[1]))}`,
+        String(Math.round(ml / WATER_GLASS_ML)),
+        r.now ? '—' : Math.abs(d) < 50 ? 'Same' : `${d > 0 ? '+' : '−'}${mlText(Math.abs(d))}`,
+      ]);
+      $('glWaterRows').appendChild(tr);
+    }
+    $('glWaterFine').textContent = `The ${WATER_ML_PER_KG} ml per kg rule counts water from drinks and food, and it runs high at heavier weights. For comparison, the US National Academies' general guide for men is about 3.7 L a day in total, about ${litersText(WATER_MEN_GUIDE_ML)} of it from drinks, whatever your weight. Thirst and pale yellow urine are good day-to-day checks. Kidney or heart problems and some medicines change how much is safe, so ask a doctor if any apply.`;
   }
 
   const offset = W.calibration.offset;

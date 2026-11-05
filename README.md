@@ -6,7 +6,7 @@ A small personal site for cutting down on junk food and keeping an eye on money.
 - **Monthly trends** – charts built from my expense sheet: which unhealthy foods I buy most, how many calories they add up to, and how that changes month by month.
 - **Finances** – from my first paycheck (February 2026) on: income (salary + tuition), expenses paid from salary, money sent to India, investments, and how much was saved each month and in total.
 - **Weight progress** – every Sunday weigh-in in kg or lb, how much was lost or gained each week, and calories, steps and cycling alongside.
-- **Goal dates** – projected dates for 120, 100 and 80 kg from calories, steps, cycling, how my weight has actually responded, and my age and sex. Includes current BMI, estimated body fat, BMI milestones and a what-if planner.
+- **Goal dates** – projected dates for 120, 100 and 80 kg from calories, steps, cycling, how my weight has actually responded, and my age and sex. Includes current BMI, estimated body fat, BMI milestones, a what-if planner, and how much water to drink a day at any weight (35 ml per kg, with a slider to compare against your current weight and goals).
 
 **Live site:** https://gauthiii.github.io/weight_flowchart/
 
