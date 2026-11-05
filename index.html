@@ -883,31 +883,6 @@
       </section>
     </div>
 
-    <section class="card tr-card" aria-labelledby="wtWaterTitle">
-      <h2 id="wtWaterTitle">Water and the scale</h2>
-      <p class="tr-sub" id="wtWaterSub"></p>
-      <div class="tr-legend" id="wtWaterLegend">
-        <span><i style="background: var(--g1)"></i>Liters a day</span>
-        <span><i class="swatch-faded" style="background: var(--g1)"></i>Only a few days logged</span>
-      </div>
-      <div class="tr-chart fin-chart wt-short" id="wtWater"></div>
-      <div id="wtWaterImpact">
-        <div class="table-wrap" id="wtWaterTableWrap">
-          <table class="tr-table wt-table wt-water">
-            <thead>
-              <tr>
-                <th>Weeks with</th><th class="num">Weeks</th><th class="num">Water / day</th><th class="num">Calories / day</th>
-                <th class="num">Change / week</th><th class="num">Beyond calories</th>
-              </tr>
-            </thead>
-            <tbody id="wtWaterRows"></tbody>
-          </table>
-        </div>
-        <p class="gl-verdict" id="wtWaterVerdict"></p>
-      </div>
-      <p class="fine" id="wtWaterFine"></p>
-    </section>
-
     <section class="card tr-card" aria-labelledby="wtTableTitle">
       <h2 id="wtTableTitle">Week by week</h2>
       <p class="tr-sub">Newest first. Each week runs Sunday to Saturday, and its change is the next Sunday's weight minus this one.</p>
@@ -916,7 +891,7 @@
           <thead>
             <tr>
               <th>Week of</th><th class="num">Weight</th><th class="num">Change</th><th class="num">Calories / day</th>
-              <th class="num">Steps / day</th><th class="num">Cycling</th><th class="num">Water / day</th>
+              <th class="num">Steps / day</th><th class="num">Cycling</th>
             </tr>
           </thead>
           <tbody id="wtRows"></tbody>
@@ -1658,7 +1633,6 @@
     return rounded === 0 ? `0.0 ${unit}` : `${kg > 0 ? '+' : '−'}${rounded.toFixed(1)} ${unit}`;
   };
   const int = (v) => Math.round(v).toLocaleString('en-US');
-  const liters = (v) => `${v.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} L`;
   const toDate = (iso) => { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d); };
   const addDays = (date, n) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + n);
   const dayLabel = (date) => `${MONTHS[date.getMonth()]} ${date.getDate()}`;
@@ -1925,7 +1899,6 @@
     { label: 'calories a day' + (w.estimated ? ' (estimated)' : ''), value: w.kcal == null ? '—' : int(w.kcal) },
     { label: 'steps a day', value: w.steps == null ? '—' : int(w.steps) },
     { label: 'cycling', value: `${int(w.cyclingMin)} min` },
-    ...(w.waterL ? [{ label: 'water a day', value: liters(w.waterL) }] : []),
   ];
 
   const chartWeight = makeChart($('wtWeight'), {
@@ -2004,78 +1977,6 @@
     }),
   });
 
-  /* Water: liters a day each week, and how the scale moved against what calories alone predicted */
-  const WATER = W.water || { column: null, loggedDays: 0 };
-  const hasWater = !!(WATER.column && WATER.loggedDays);
-  const thinWater = (w) => w.waterL && w.waterDays < WATER.minDays;
-  const chartWater = hasWater ? makeChart($('wtWater'), {
-    label: 'Water drunk per day, averaged by week',
-    height: shortHeight,
-    series: () => ({
-      mode: 'bar', dates, values: weeks.map((w) => w.waterL || null), axis: (v) => +v.toFixed(1) + ' L',
-      fill: () => 'var(--g1)', faded: (i) => thinWater(weeks[i]),
-    }),
-    tip: (i) => {
-      const w = weeks[i];
-      if (!w.waterL) return { head: weekHead(i), value: 'No water logged', rows: [] };
-      const rows = [{ label: 'days logged', value: `${w.waterDays} of ${w.days}` }];
-      if (w.change != null) rows.push({ label: 'on the scale', value: signedMass(w.change) });
-      if (w.expected != null) {
-        rows.push({ label: 'calories predicted', value: signedMass(w.expected) });
-        rows.push({ label: 'beyond calories', value: signedMass(w.change - w.expected) });
-      }
-      return { head: weekHead(i), value: `${liters(w.waterL)} a day`, rows };
-    },
-  }) : null;
-
-  function renderWater() {
-    if (!hasWater) {
-      $('wtWaterSub').textContent = 'How much water you drink each day, next to how the scale moved.';
-      $('wtWaterLegend').hidden = true;
-      $('wtWaterImpact').hidden = true;
-      $('wtWater').innerHTML = WATER.column
-        ? `<p class="tr-empty">Found the <code></code> column, but nothing is logged in it yet.</p>`
-        : '<p class="tr-empty">No water column yet. Add a column with <code>Water</code> in its header to the calorie sheet and enter the liters you drink each day (like <code>2.5</code>).</p>';
-      const code = $('wtWater').querySelector('code');
-      if (WATER.column) code.textContent = WATER.column;
-      $('wtWaterFine').textContent = 'Once a few weeks are logged, this compares weeks with more water against weeks with less, after allowing for what you ate and how much you moved.';
-      return;
-    }
-    const logged = weeks.filter((w) => w.waterL);
-    const avg = logged.reduce((s, w) => s + w.waterL * w.waterDays, 0) / WATER.loggedDays;
-    $('wtWaterSub').textContent = `Average liters a day for each week, from the "${WATER.column}" column. ${WATER.loggedDays} days logged across ${logged.length} weeks, ${liters(avg)} a day on average. Hover or tap a week to see how the scale moved.`;
-
-    const g = WATER.groups;
-    $('wtWaterTableWrap').hidden = !g;
-    $('wtWaterRows').replaceChildren();
-    if (!g) {
-      const need = WATER.minWeeks - WATER.weeks;
-      $('wtWaterVerdict').textContent = `Not enough to compare yet: ${WATER.weeks} finished ${WATER.weeks === 1 ? 'week has' : 'weeks have'} water logged on ${WATER.minDays}+ days. ${need > 0 ? `${need} more ${need === 1 ? 'week' : 'weeks'} like that and` : 'Once the amounts vary from week to week,'} this will show whether more water lines up with more weight lost.`;
-    } else {
-      const heads = headsOf('.wt-water');
-      const perWeek = (kg) => (kg == null ? '—' : `${signedMass(kg)}`);
-      for (const [key, name] of [['more', `More water (${liters(WATER.split)}+)`], ['less', `Less water (under ${liters(WATER.split)})`]]) {
-        const r = g[key];
-        const tr = document.createElement('tr');
-        addCells(tr, heads, [name, String(r.weeks), liters(r.water), r.kcal == null ? '—' : int(r.kcal), perWeek(r.change), perWeek(r.beyond)]);
-        $('wtWaterRows').appendChild(tr);
-      }
-      const useBeyond = g.more.beyond != null && g.less.beyond != null;
-      const diff = useBeyond ? g.more.beyond - g.less.beyond : g.more.change - g.less.change;
-      const after = useBeyond ? ', after allowing for what you ate and how much you moved' : '';
-      let text = Math.abs(conv(diff)) < 0.05
-        ? `Water made almost no difference: weeks with more water and weeks with less ended up within ${mass(0.05)} of each other${after}.`
-        : `Weeks with more water came out ${mass(Math.abs(diff))} a week ${diff < 0 ? 'lighter' : 'heavier'} than weeks with less water${after}.`;
-      const pl = WATER.perLiter;
-      if (pl) {
-        const strength = Math.abs(pl.r) < 0.2 ? 'a weak link that could easily be chance' : Math.abs(pl.r) < 0.5 ? 'a moderate link' : 'a strong link';
-        text += ` Across ${pl.weeks} weeks, each extra liter a day lined up with ${signedMass(pl.kg)} a week beyond calories (correlation ${pl.r < 0 ? '−' : ''}${Math.abs(pl.r).toFixed(2)}, ${strength}).`;
-      }
-      $('wtWaterVerdict').textContent = text;
-    }
-    $('wtWaterFine').textContent = `"Beyond calories" is the real change minus what that week's calories, steps and cycling predict, using the same calibrated model as the Goals tab, so a negative number means you lost more than the food explains. Weeks are split at the middle amount (${WATER.split == null ? 'once there are enough' : liters(WATER.split) + ' a day'}). Only finished weeks with water logged on ${WATER.minDays} or more days count, and weeks with repeated calorie totals are left out of "beyond calories". Water has no calories: a link here can come from less water retention, fewer sugary drinks or simply better weeks overall, so treat it as a pattern, not proof.`;
-  }
-
   function renderWeightTab() {
     const total = latest.kg - first.kg;
     const pace = W.trend.kgPerWeek;
@@ -2110,14 +2011,12 @@
         w.kcal == null ? '—' : int(w.kcal) + (w.estimated ? ' †' : ''),
         w.steps == null ? '—' : int(w.steps),
         w.cyclingMin ? `${int(w.cyclingMin)} min` : '—',
-        w.waterL ? liters(w.waterL) : '—',
       ]);
       $('wtRows').appendChild(tr);
     }
     $('wtMore').textContent = showAllWeeks ? 'Show the latest 8 weeks' : `Show all ${weeks.length} weeks`;
     $('wtFine').textContent = `† The same calorie total repeats for 5 or more days in a row in this week, so it's marked as an estimate. That covers ${W.repeats.days} of the ${W.repeats.of} days so far.`;
-    renderWater();
-    [chartWeight, chartChange, chartKcal, chartSteps, chartCycle, chartWater].forEach((c) => c && c.render());
+    [chartWeight, chartChange, chartKcal, chartSteps, chartCycle].forEach((c) => c.render());
   }
   $('wtMore').addEventListener('click', () => { showAllWeeks = !showAllWeeks; renderWeightTab(); });
 
