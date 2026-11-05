@@ -5,7 +5,7 @@ A small personal site for cutting down on junk food and keeping an eye on money.
 - **Craving flowchart** – an interactive decision chart for my top 10 junk foods from the expense sheet (biryani, Popeyes/KFC, Maggi, Burger King, nuggets, ice cream, Nutella, brownies & cookies, pizza, Sunny D). Each craving gets six better options, best match first: tilapia, shrimp, chicken breast or an omelette for the savory ones; blueberry Greek yogurt, a protein shake, frozen banana or grapes, strawberries or oranges for the sweet ones; and a Great Value electrolyte drink for Sunny D. It walks you through one "is it available?" question at a time and shows what giving in would cost, including how many times you've bought it.
 - **Monthly trends** – charts built from my expense sheet: which unhealthy foods I buy most, how many calories they add up to, and how that changes month by month.
 - **Finances** – from my first paycheck (February 2026) on: income (salary + tuition), expenses paid from salary, money sent to India, investments, and how much was saved each month and in total.
-- **Weight progress** – every Sunday weigh-in in kg or lb, how much was lost or gained each week, and calories, steps and cycling alongside.
+- **Weight progress** – every Sunday weigh-in in kg or lb, how much was lost or gained each week, and calories, steps, cycling and water alongside, plus how weeks with more water compare with weeks with less.
 - **Goal dates** – projected dates for 120, 100 and 80 kg from calories, steps, cycling, how my weight has actually responded, and my age and sex. Includes current BMI, estimated body fat, BMI milestones and a what-if planner.
 
 **Live site:** https://gauthiii.github.io/weight_flowchart/
@@ -55,13 +55,14 @@ Saved = paychecks + tuition − expenses − sent to India − invested. A big t
 
 ## Weight progress and goal dates
 
-Built from the [calorie counter sheet](https://docs.google.com/spreadsheets/d/1LqOzKup2XJUcKq8mY2su2XTyEukgkxhLAM7C6UTgNjk): the `Weight in KG` rows (one each Sunday) and the daily `STEPS`, `CYCLING` and `TOTAL` columns.
+Built from the [calorie counter sheet](https://docs.google.com/spreadsheets/d/1LqOzKup2XJUcKq8mY2su2XTyEukgkxhLAM7C6UTgNjk): the `Weight in KG` rows (one each Sunday), the daily `STEPS`, `CYCLING` and `TOTAL` columns, and a water column once you add one.
 
 - **Burn** uses the sheet's own formulas: Mifflin-St Jeor at rest (age 27, male, 180 cm), plus steps and cycling.
 - **Calibration:** `update_weight.py` compares those formulas with how the scale actually moved on fully logged weeks, and applies the average gap to every burn figure. Weeks where one calorie total repeats for 5+ days are charted but left out of this.
 - **Projection** runs in the browser, day by day: (calories − burn) ÷ 7,700 kcal per kg, with burn falling as weight falls. Current habits are the last 28 days' averages.
 - **Body fat** is estimated with the CUN-BAE equation from BMI, age and sex.
 
+- **Water**: any column with "water" in its header holds the liters drunk that day (`2.5`, `2.5 L` or `2500 ml` all work; numbers over 20 are read as ml). It is never counted as a food, wherever it sits. Each week shows its average liters a day. Finished weeks with water logged on 4+ days are split at the middle amount into "more water" and "less water" weeks, and each group shows its average weekly change and its change **beyond calories**: the real change minus what that week's calories, steps and cycling predict with the calibrated model (weeks with repeated calorie totals are left out of that part). A regression gives kg per week for each extra liter a day, with its correlation. The comparison appears once 4 such weeks exist. It shows a pattern, not cause and effect.
 - **Macros** (the calorie chart's tooltip): each food column's calories are split into carbs, protein and fat using `FOOD_MACROS` in `update_weight.py`, then turned into grams at 4 kcal per gram of carbs or protein and 9 kcal per gram of fat. A new food column uses the biryani split until it gets its own row, and the Action log names it.
 
 To change age or height, edit `AGE` and `HEIGHT_CM` in `update_weight.py`. To change a food's macros, edit its row in `FOOD_MACROS`.
@@ -74,7 +75,7 @@ To change age or height, edit `AGE` and `HEIGHT_CM` in `update_weight.py`. To ch
 | `update_sheet.py` | Downloads the sheet and regenerates the data files. Python standard library only. |
 | `update_weight.py` | Downloads the calorie sheet and regenerates the weight data. Python standard library only. |
 | `data/calories.csv` | The full calorie sheet as exported by Google. |
-| `data/weight.js` | Generated. Weekly weight, calories, steps, cycling and calibration for the weight and goals tabs. |
+| `data/weight.js` | Generated. Weekly weight, calories, steps, cycling, water, calibration and the water comparison for the weight and goals tabs. |
 | `data/expenses.csv` | The full sheet as exported by Google. |
 | `data/junk_food.js` | Generated. Monthly counts, spend and summary for the trends tab. |
 | `data/finance.js` | Generated. Monthly income, expenses, India transfers, investments and savings for the finances tab. |

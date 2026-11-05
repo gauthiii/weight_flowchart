@@ -40,6 +40,12 @@ BEST_STRETCH_WEEKS = 7
 HABIT_DAYS = 28
 TREND_WEEKS = 8
 
+# Water: any column whose header contains "water" holds liters drunk that day (it's never counted as a food).
+# Numbers above WATER_ML_ABOVE are read as milliliters. A week needs WATER_MIN_DAYS logged days to count.
+WATER_ML_ABOVE = 20
+WATER_MIN_DAYS = 4
+WATER_MIN_WEEKS = 4
+
 # Share of each food's calories from (carbs, protein, fat, alcohol), in percent. These are typical
 # values for that food, not measurements. Edit a row to change a food, or add a row for a new one.
 # Names match the sheet's column headers, ignoring upper and lower case.
@@ -137,8 +143,9 @@ def read_sheet(text):
     """Daily rows up to the last day with anything logged, the Sunday weigh-ins, and the food column names."""
     grid = list(csv.reader(io.StringIO(text)))
     head = [h.strip() for h in grid[0]]
-    # Every column after DEFICIT is a food, including ones added later
-    food_cols = [(i, head[i]) for i in range(head.index("DEFICIT") + 1, len(head)) if head[i]]
+    water_col = next((i for i, h in enumerate(head) if "water" in h.lower()), None)
+    # Every column after DEFICIT is a food, including ones added later (except the water column)
+    food_cols = [(i, head[i]) for i in range(head.index("DEFICIT") + 1, len(head)) if head[i] and i != water_col]
     days, weighins = [], []
     for row in grid[1:]:
         r = dict(zip(head, row))
@@ -147,16 +154,22 @@ def read_sheet(text):
             continue
         steps_raw = (r.get("STEPS") or "").strip()
         foods = {name: parse_cost(row[i]) for i, name in food_cols if i < len(row) and row[i].strip()}
+        water = None
+        if water_col is not None and water_col < len(row) and row[water_col].strip():
+            water = parse_cost(row[water_col].lower().replace("ml", "").replace("l", ""))
+            if water > WATER_ML_ABOVE:
+                water /= 1000
+            water = water if water > 0 else None
         days.append({"date": d, "kcal": parse_cost(r.get("TOTAL") or ""),
                      "steps": parse_cost(steps_raw) if steps_raw else None,
-                     "cycling": parse_cost(r.get("CYCLING") or ""), "foods": foods})
+                     "cycling": parse_cost(r.get("CYCLING") or ""), "water": water, "foods": foods})
         if (r.get("METRICS") or "").strip() == "Weight in KG":
             kg = parse_cost(r.get("STATS") or "")
             if kg > 0:
                 weighins.append((d, kg))
     # The sheet is pre-filled with future dates, so stop at the last day with data
-    last = max((i for i, x in enumerate(days) if x["kcal"] > 0 or x["steps"] is not None), default=-1)
-    return days[:last + 1], weighins, [name for _, name in food_cols]
+    last = max((i for i, x in enumerate(days) if x["kcal"] > 0 or x["steps"] is not None or x["water"]), default=-1)
+    return days[:last + 1], weighins, [name for _, name in food_cols], head[water_col] if water_col is not None else None
 
 
 def mark_repeats(days):
@@ -173,9 +186,11 @@ def mark_repeats(days):
 def averages(days):
     kcal = [x["kcal"] for x in days if x["kcal"] > 0]
     steps = [x["steps"] for x in days if x["steps"] is not None]
+    water = [x["water"] for x in days if x["water"]]
     return {"kcal": round(statistics.fmean(kcal)) if kcal else None,
             "steps": round(statistics.fmean(steps)) if steps else None,
-            "cycling": round(statistics.fmean(x["cycling"] for x in days), 1) if days else 0}
+            "cycling": round(statistics.fmean(x["cycling"] for x in days), 1) if days else 0,
+            "water": round(statistics.fmean(water), 2) if water else None}
 
 
 def average_macros(days):
@@ -211,6 +226,7 @@ def build_weeks(days, weighins):
                       "kcal": avg["kcal"], "macros": average_macros(span), "steps": avg["steps"],
                       "cyclingMin": round(sum(x["cycling"] for x in span)),
                       "cyclingDays": sum(x["cycling"] > 0 for x in span),
+                      "waterL": avg["water"], "waterDays": sum(bool(x["water"]) for x in span),
                       "days": len(span), "repeatedDays": repeated,
                       "estimated": repeated >= 4})
     return weeks
@@ -250,6 +266,49 @@ def calibrate(weeks):
     return {"offset": round(offset), "weeks": len(real), "check": check}
 
 
+def add_expected(weeks, offset):
+    """What the calories, steps and cycling alone say each finished week should have done to the scale.
+    Left out for weeks with repeated (filled-in) calorie totals, the same weeks calibration skips."""
+    for w in weeks:
+        w["expected"] = None
+        if w["change"] is not None and w["kcal"] and w["steps"] is not None and w["repeatedDays"] == 0:
+            burn = formula_burn(w["kg"] + w["change"] / 2, w["steps"], w["cyclingMin"] / 7) + offset
+            w["expected"] = round((w["kcal"] - burn) * 7 / KCAL_PER_KG, 2)
+
+
+def water_impact(weeks, column):
+    """Compare finished weeks with more water against weeks with less, on the real change and on the
+    change beyond what calories explain. Only weeks with water logged on WATER_MIN_DAYS or more days count."""
+    used = [w for w in weeks if w["change"] is not None and w["waterL"] and w["waterDays"] >= WATER_MIN_DAYS]
+    out = {"column": column, "weeks": len(used), "minWeeks": WATER_MIN_WEEKS, "minDays": WATER_MIN_DAYS,
+           "loggedDays": sum(w["waterDays"] for w in weeks), "split": None, "groups": None, "perLiter": None}
+    if len(used) < WATER_MIN_WEEKS:
+        return out
+    split = statistics.median(w["waterL"] for w in used)
+    more = [w for w in used if w["waterL"] >= split]
+    less = [w for w in used if w["waterL"] < split]
+    if not less:  # every week had the same amount
+        return out
+
+    def group(ws):
+        known = [w for w in ws if w["expected"] is not None]
+        return {"weeks": len(ws), "water": round(statistics.fmean(w["waterL"] for w in ws), 2),
+                "change": round(statistics.fmean(w["change"] for w in ws), 2),
+                "kcal": round(statistics.fmean(w["kcal"] for w in ws if w["kcal"])) if any(w["kcal"] for w in ws) else None,
+                "beyond": round(statistics.fmean(w["change"] - w["expected"] for w in known), 2) if known else None}
+
+    out["split"] = round(split, 2)
+    out["groups"] = {"more": group(more), "less": group(less)}
+    # Change beyond calories against liters a day: the slope says how much each extra liter lined up with
+    known = [w for w in used if w["expected"] is not None]
+    xs = [w["waterL"] for w in known]
+    if len(known) >= WATER_MIN_WEEKS and len(set(xs)) > 1:
+        ys = [w["change"] - w["expected"] for w in known]
+        fit = statistics.linear_regression(xs, ys)
+        out["perLiter"] = {"kg": round(fit.slope, 2), "r": round(statistics.correlation(xs, ys), 2), "weeks": len(known)}
+    return out
+
+
 def best_stretch(weeks, days):
     """The run of weeks with the most weight lost, and what you were doing during it."""
     done = [w for w in weeks if w["change"] is not None]
@@ -266,11 +325,13 @@ def best_stretch(weeks, days):
 
 
 def build(text):
-    days, weighins, food_names = read_sheet(text)
+    days, weighins, food_names, water_column = read_sheet(text)
     if not days or len(weighins) < 2:
         sys.exit("Not enough dated rows or weigh-ins found in the sheet.")
     mark_repeats(days)
     weeks = build_weeks(days, weighins)
+    calibration = calibrate(weeks)
+    add_expected(weeks, calibration["offset"])
     recent = days[-HABIT_DAYS:]
     trend = weighins[-TREND_WEEKS:]
     slope = statistics.linear_regression(range(len(trend)), [kg for _, kg in trend]).slope
@@ -281,12 +342,13 @@ def build(text):
         "profile": {"age": AGE, "sex": "male", "heightCm": HEIGHT_CM},
         "asOf": days[-1]["date"].isoformat(),
         "weeks": weeks,
-        "calibration": calibrate(weeks),
+        "calibration": calibration,
         "habits": {**averages(recent), "from": recent[0]["date"].isoformat(), "days": len(recent)},
         "best": best_stretch(weeks, days),
         "trend": {"kgPerWeek": round(slope, 2), "weeks": len(trend)},
         "repeats": {"days": len(repeats), "of": len(days)},
         "macros": macro_table(days, food_names),
+        "water": water_impact(weeks, water_column),
     }
 
 
@@ -305,6 +367,12 @@ def main():
           f"data through {data['asOf']}.")
     print(f"Calibration: {cal['offset']:+d} kcal/day from {cal['weeks']} logged weeks. "
           f"Last {hab['days']} days: {hab['kcal']} kcal, {hab['steps']} steps, {hab['cycling']} min cycling.")
+    water = data["water"]
+    if not water["column"]:
+        print("No water column in the sheet yet (add one with \"water\" in its header).")
+    else:
+        print(f"Water: {water['loggedDays']} days logged in \"{water['column']}\", {water['weeks']} finished weeks usable "
+              f"(need {water['minWeeks']} for the comparison).")
     if data["macros"]["assumed"]:
         print(f"New foods using the {DEFAULT_FOOD} macro split until they're added to FOOD_MACROS: "
               + ", ".join(data["macros"]["assumed"]))
