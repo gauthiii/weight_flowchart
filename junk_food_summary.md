@@ -1,6 +1,6 @@
 # Junk food I buy most often
 
-From my expense sheet, Aug 2023 – Nov 8, 2026. Generated 2026-11-10 by `update_sheet.py`.
+From my expense sheet, Aug 2023 – Nov 10, 2026. Generated 2026-11-11 by `update_sheet.py`.
 
 ## Summary table
 
@@ -21,27 +21,27 @@ From my expense sheet, Aug 2023 – Nov 8, 2026. Generated 2026-11-10 by `update
 | 13 | Chips (Lays, Cheetos, Pringles, Kurkure, Bhujia) | 37 | $99 | 900 | 33,300 | 9.5 lb / 4.3 kg |
 | 14 | Chocolate bars (Reese's, Hershey's, Kit Kat) | 73 | $311 | 450 | 32,850 | 9.4 lb / 4.3 kg |
 | 15 | Hot dogs / franks / bologna / sausage / buns | 39 | $53 | 800 | 31,200 | 8.9 lb / 4.0 kg |
-| 16 | Soda (Fanta, Mtn Dew, Coke, fountain) | 123 | $230 | 250 | 30,750 | 8.8 lb / 4.0 kg |
+| 16 | Soda (Fanta, Mtn Dew, Coke, fountain) | 124 | $231 | 250 | 31,000 | 8.9 lb / 4.0 kg |
 | 17 | Popcorn (Act II packs) | 19 | $35 | 1,500 | 28,500 | 8.1 lb / 3.7 kg |
-| 18 | Buffets / parotta / other restaurant | 18 | $243 | 1,300 | 23,400 | 6.7 lb / 3.0 kg |
+| 18 | Buffets / parotta / other restaurant | 19 | $257 | 1,300 | 24,700 | 7.1 lb / 3.2 kg |
 | 19 | Ketchup / mayo / ranch / jelly † | 37 | $45 | 600 | 22,200 | 6.3 lb / 2.9 kg |
 | 20 | Cheese slices | 23 | $55 | 900 | 20,700 | 5.9 lb / 2.7 kg |
-| 21 | Subway | 16 | $231 | 1,000 | 16,000 | 4.6 lb / 2.1 kg |
+| 21 | Subway | 17 | $242 | 1,000 | 17,000 | 4.9 lb / 2.2 kg |
 | 22 | Gas-station "Snacks" (QT, airport) | 17 | $178 | 900 | 15,300 | 4.4 lb / 2.0 kg |
 | 23 | Beer / alcohol | 17 | $188 | 900 | 15,300 | 4.4 lb / 2.0 kg |
 | 24 | Monster / Red Bull | 43 | $161 | 230 | 9,890 | 2.8 lb / 1.3 kg |
 | 25 | Oreo milkshakes | 9 | $67 | 700 | 6,300 | 1.8 lb / 0.8 kg |
 | 26 | Fries | 5 | $11 | 400 | 2,000 | 0.6 lb / 0.3 kg |
-| | **Total** | **1,099** | **$7,336** | | **1,033,610 kcal** | **~295 lb / 134 kg** |
+| | **Total** | **1,102** | **$7,361** | | **1,036,160 kcal** | **~296 lb / 134 kg** |
 
 † Cooking staples (ghee, butter, sugar, condiments): these last a long time and are shared, so their calorie numbers are the roughest guesses here.
 
 ## What stands out
 
-- **2026 is much worse than the earlier years.** Of all the purchases since August 2023, 2026 so far has 90 of the 132 biryanis, 80 of the 123 sodas and 33 of the 43 energy drinks. Your junk-food rate went from about 710 kcal/day before 2026 to about 1,320 kcal/day in 2026.
+- **2026 is much worse than the earlier years.** Of all the purchases since August 2023, 2026 so far has 90 of the 132 biryanis, 81 of the 124 sodas and 33 of the 43 energy drinks. Your junk-food rate went from about 710 kcal/day before 2026 to about 1,320 kcal/day in 2026.
 - **Biryani is the biggest problem.** It's the top item by calories and by money ($2,205 spent), and you've had it about 2.0 times a week in 2026.
-- **Drinks add up even though each one seems small.** Sunny D, Soda and Monster together are 240 purchases, about 76,000 kcal or 22 lb.
-- **Takeout is where the money goes.** Biryani, burgers, fried chicken, pizza, Subway and other restaurant meals account for $4,759, 65% of the $7,336 spent on everything in this table.
+- **Drinks add up even though each one seems small.** Sunny D, Soda and Monster together are 241 purchases, about 76,000 kcal or 22 lb.
+- **Takeout is where the money goes.** Biryani, burgers, fried chicken, pizza, Subway and other restaurant meals account for $4,784, 65% of the $7,361 spent on everything in this table.
 
 ## How to read these numbers
 
