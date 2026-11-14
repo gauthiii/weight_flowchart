@@ -140,11 +140,20 @@ def read_sheet(text):
     # Every column after DEFICIT is a food, including ones added later
     food_cols = [(i, head[i]) for i in range(head.index("DEFICIT") + 1, len(head)) if head[i]]
     days, weighins = [], []
+    prev = None
     for row in grid[1:]:
         r = dict(zip(head, row))
         d = parse_date((r.get("DATE") or "").strip())
         if d is None:
+            # Sunday's weigh-in often goes in before that row's date is filled, so date it from the row above
+            if prev is not None:
+                prev += timedelta(days=1)
+                if (r.get("METRICS") or "").strip() == "Weight in KG":
+                    kg = parse_cost(r.get("STATS") or "")
+                    if kg > 0:
+                        weighins.append((prev, kg))
             continue
+        prev = d
         steps_raw = (r.get("STEPS") or "").strip()
         foods = {name: parse_cost(row[i]) for i, name in food_cols if i < len(row) and row[i].strip()}
         days.append({"date": d, "kcal": parse_cost(r.get("TOTAL") or ""),
