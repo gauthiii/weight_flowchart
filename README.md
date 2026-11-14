@@ -43,6 +43,17 @@ A GitHub Action ([.github/workflows/update-and-deploy.yml](.github/workflows/upd
 
 Because the Action may add a commit after you push, run `git pull` before your next push.
 
+### Refresh button on the live site
+
+The circular-arrows button next to the theme toggle starts the same Action on demand, so you don't have to wait for the daily run. It shows progress (pulling the sheets, then deploying) and reloads the page once the new data is live.
+
+The page is static, so it needs a GitHub token to start the Action. The first time you click it, paste a [fine-grained token](https://github.com/settings/personal-access-tokens/new) with:
+
+- **Repository access:** only `weight_flowchart`
+- **Permissions:** **Actions**, read and write (nothing else)
+
+The token is saved in that browser's `localStorage` and only sent to `api.github.com`. Use *Forget the saved token* in the popover to remove it. If GitHub rejects the token, the page clears it and asks again. Visitors without a token can open the popover but can't start anything.
+
 ## Finances
 
 Built from three places in the sheet:
