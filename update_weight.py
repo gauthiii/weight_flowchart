@@ -7,7 +7,7 @@ Writes:
   data/calories.csv   the whole sheet, exactly as Google exports it
   data/weight.js      weekly data + calibration for the "Weight" and "Goals" tabs in index.html
 
-To change how a food's calories split into macros, edit FOOD_MACROS below.
+To change how a food's calories split into macros, or how long it takes to process, edit FOOD_MACROS below.
 
 Uses only the Python standard library.
 """
@@ -40,57 +40,68 @@ BEST_STRETCH_WEEKS = 7
 HABIT_DAYS = 28
 TREND_WEEKS = 8
 
-# Share of each food's calories from (carbs, protein, fat, alcohol), in percent. These are typical
-# values for that food, not measurements. Edit a row to change a food, or add a row for a new one.
-# Names match the sheet's column headers, ignoring upper and lower case.
+# Each food: share of its calories from (carbs, protein, fat, alcohol) in percent, then the time to
+# process it in hours. The time is roughly how long a typical serving takes to digest: sugary drinks
+# and fruit are fastest, fat, fried food and red meat slowest. For alcohol it's the time the liver
+# takes to clear a drink. These are typical values, not measurements. Edit a row to change a food,
+# or add a row for a new one. Names match the sheet's column headers, ignoring upper and lower case.
 FOOD_MACROS = {
-    "Biriyani": (42, 19, 39, 0),
-    "Ice Cream": (45, 7, 48, 0),
-    "Fanta": (100, 0, 0, 0),
-    "Cookies/ Choc": (52, 5, 43, 0),
-    "Chicken": (0, 65, 35, 0),
-    "Eggs": (2, 34, 64, 0),
-    "Candy": (95, 1, 4, 0),
-    "Pizza": (45, 17, 38, 0),
-    "Subway": (48, 20, 32, 0),
-    "Salmon": (0, 45, 55, 0),
-    "Oranges": (90, 8, 2, 0),
-    "Ramen": (55, 9, 36, 0),
-    "BK Sandwich": (30, 17, 53, 0),
-    "Egg Dosa": (45, 20, 35, 0),
-    "Small Fries": (52, 4, 44, 0),
-    "Chicken Sandwich JITB": (38, 17, 45, 0),
-    "Oreo Milkshake": (58, 7, 35, 0),
-    "Chicken 65": (15, 35, 50, 0),
-    "Protein Powder": (10, 80, 10, 0),
-    "Monster": (100, 0, 0, 0),
-    "Lays": (37, 5, 58, 0),
-    "Smirnoff": (0, 0, 0, 100),
-    "Garlic Naan": (60, 12, 28, 0),
-    "Strawberries": (85, 8, 7, 0),
-    "Wheat Tortilla": (65, 12, 23, 0),
-    "Gulab Jamun": (60, 5, 35, 0),
-    "Chicken Fajita": (30, 35, 35, 0),
-    "Zero Sugar": (100, 0, 0, 0),
-    "Red Bull Small": (100, 0, 0, 0),
-    "French Toast": (44, 14, 42, 0),
-    "Grapes": (94, 4, 2, 0),
-    "Rice": (90, 8, 2, 0),
-    "Non Veg Thaali": (45, 20, 35, 0),
-    "Steak Nachos": (38, 17, 45, 0),
+    "Biriyani": (42, 19, 39, 0, 4.5),
+    "Ice Cream": (45, 7, 48, 0, 3),
+    "Fanta": (100, 0, 0, 0, 0.5),
+    "Cookies/ Choc": (52, 5, 43, 0, 2.5),
+    "Chicken": (0, 65, 35, 0, 3),
+    "Eggs": (2, 34, 64, 0, 2),
+    "Candy": (95, 1, 4, 0, 1),
+    "Pizza": (45, 17, 38, 0, 4),
+    "Subway": (48, 20, 32, 0, 3),
+    "Salmon": (0, 45, 55, 0, 2.5),
+    "Oranges": (90, 8, 2, 0, 0.5),
+    "Ramen": (55, 9, 36, 0, 3),
+    "BK Sandwich": (30, 17, 53, 0, 4.5),
+    "Egg Dosa": (45, 20, 35, 0, 3),
+    "Small Fries": (52, 4, 44, 0, 3),
+    "Chicken Sandwich JITB": (38, 17, 45, 0, 4),
+    "Oreo Milkshake": (58, 7, 35, 0, 3),
+    "Chicken 65": (15, 35, 50, 0, 4),
+    "Protein Powder": (10, 80, 10, 0, 1.5),
+    "Monster": (100, 0, 0, 0, 0.5),
+    "Lays": (37, 5, 58, 0, 3),
+    "Smirnoff": (0, 0, 0, 100, 1),
+    "Garlic Naan": (60, 12, 28, 0, 3),
+    "Strawberries": (85, 8, 7, 0, 0.5),
+    "Wheat Tortilla": (65, 12, 23, 0, 2),
+    "Gulab Jamun": (60, 5, 35, 0, 3),
+    "Chicken Fajita": (30, 35, 35, 0, 3.5),
+    "Zero Sugar": (100, 0, 0, 0, 0.5),
+    "Red Bull Small": (100, 0, 0, 0, 0.5),
+    "French Toast": (44, 14, 42, 0, 3),
+    "Grapes": (94, 4, 2, 0, 0.5),
+    "Rice": (90, 8, 2, 0, 2),
+    "Non Veg Thaali": (45, 20, 35, 0, 4.5),
+    "Steak Nachos": (38, 17, 45, 0, 5),
+    "Ghee": (0, 0, 100, 0, 4),
+    "Rice Powder": (60, 20, 20, 0, 2),
 }
-# A food column that isn't listed above uses this food's split until it gets its own row
+# A food column that isn't listed above uses this food's split and time until it gets its own row
 DEFAULT_FOOD = "Biriyani"
-SPLITS = {name.strip().lower(): split for name, split in FOOD_MACROS.items()}
-for name, split in FOOD_MACROS.items():
-    if sum(split) != 100:
-        sys.exit(f"FOOD_MACROS: the shares for {name} add up to {sum(split)}, not 100.")
+SPLITS = {name.strip().lower(): row[:4] for name, row in FOOD_MACROS.items()}
+HOURS = {name.strip().lower(): row[4] for name, row in FOOD_MACROS.items()}
+for name, row in FOOD_MACROS.items():
+    if len(row) != 5:
+        sys.exit(f"FOOD_MACROS: {name} needs 5 values (carbs, protein, fat, alcohol, hours), not {len(row)}.")
+    if sum(row[:4]) != 100:
+        sys.exit(f"FOOD_MACROS: the shares for {name} add up to {sum(row[:4])}, not 100.")
 
 KCAL_PER_G = {"carbs": 4, "protein": 4, "fat": 9}
 
 
 def food_split(name):
     return SPLITS.get(name.strip().lower(), SPLITS[DEFAULT_FOOD.lower()])
+
+
+def food_hours(name):
+    return HOURS.get(name.strip().lower(), HOURS[DEFAULT_FOOD.lower()])
 
 
 def macro_grams(foods):
@@ -160,7 +171,8 @@ def read_sheet(text):
         foods = {name: parse_cost(row[i]) for i, name in food_cols if i < len(row) and row[i].strip()}
         days.append({"date": d, "kcal": parse_cost(r.get("TOTAL") or ""),
                      "steps": parse_cost(steps_raw) if steps_raw else None,
-                     "cycling": parse_cost(r.get("CYCLING") or ""), "foods": foods})
+                     "cycling": parse_cost(r.get("CYCLING") or ""), "foods": foods,
+                     "sheetDeficit": parse_cost(r.get("DEFICIT") or "")})
         if (r.get("METRICS") or "").strip() == "Weight in KG":
             kg = parse_cost(r.get("STATS") or "")
             if kg > 0:
@@ -204,9 +216,18 @@ def macro_table(days, food_names):
     rows = []
     for name in sorted(food_names, key=lambda n: eaten[n], reverse=True):
         carbs, protein, fat, alcohol = food_split(name)
-        rows.append({"food": name, "carbs": carbs, "protein": protein, "fat": fat, "alcohol": alcohol})
+        rows.append({"food": name, "carbs": carbs, "protein": protein, "fat": fat, "alcohol": alcohol,
+                     "hours": food_hours(name)})
     return {"default": DEFAULT_FOOD, "foods": rows,
             "assumed": [n for n in food_names if n.strip().lower() not in SPLITS]}
+
+
+def daily(x):
+    """One day for the week page: what was eaten (kcal per food, sheet order) and how much you moved."""
+    num = lambda v: v if v is None or v != int(v) else int(v)
+    return {"date": x["date"].isoformat(), "kcal": num(x["kcal"]), "steps": num(x["steps"]),
+            "cycling": num(x["cycling"]), "repeated": x["repeated"], "sheetDeficit": num(x["sheetDeficit"]),
+            "foods": [[name, num(kcal)] for name, kcal in x["foods"].items() if kcal > 0]}
 
 
 def build_weeks(days, weighins):
@@ -223,7 +244,7 @@ def build_weeks(days, weighins):
                       "cyclingMin": round(sum(x["cycling"] for x in span)),
                       "cyclingDays": sum(x["cycling"] > 0 for x in span),
                       "days": len(span), "repeatedDays": repeated,
-                      "estimated": repeated >= 4})
+                      "estimated": repeated >= 4, "daily": [daily(x) for x in span]})
     return weeks
 
 
@@ -317,7 +338,7 @@ def main():
     print(f"Calibration: {cal['offset']:+d} kcal/day from {cal['weeks']} logged weeks. "
           f"Last {hab['days']} days: {hab['kcal']} kcal, {hab['steps']} steps, {hab['cycling']} min cycling.")
     if data["macros"]["assumed"]:
-        print(f"New foods using the {DEFAULT_FOOD} macro split until they're added to FOOD_MACROS: "
+        print(f"New foods using the {DEFAULT_FOOD} macro split and time until they're added to FOOD_MACROS: "
               + ", ".join(data["macros"]["assumed"]))
 
 

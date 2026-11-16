@@ -472,6 +472,37 @@
   .tr-legend .swatch-dash { border-top-style: dotted; }
   .wt-more { margin-top: 12px; height: 36px; padding: 0 14px; border: 1px solid var(--border); border-radius: 12px; background: transparent; color: var(--text); font-size: 13px; font-weight: 650; cursor: pointer; }
   .wt-more:hover { background: var(--accent-soft); }
+  /* Week page */
+  .wk-back { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 18px; height: 34px; padding: 0 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--text); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+  .wk-back:hover { background: var(--accent-soft); }
+  .wk-nav { flex: none; }
+  .wk-nav button:disabled { opacity: 0.4; cursor: default; }
+  .wk-days { display: grid; gap: 14px; }
+  .wk-day-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+  .wk-day-head .tr-sub { margin-top: 4px; }
+  .wk-badge { flex: none; padding: 5px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .wk-badge.good { background: color-mix(in srgb, var(--g3) 16%, transparent); color: var(--g3); }
+  .wk-badge.bad { background: color-mix(in srgb, var(--g2) 16%, transparent); color: var(--g2); }
+  .wk-badge.none { background: var(--accent-soft); color: var(--muted); }
+  .wk-meters { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; margin-top: 16px; font-size: 12.5px; }
+  .wk-meters > span { color: var(--muted); font-weight: 600; }
+  .wk-meters > b { font-variant-numeric: tabular-nums; text-align: right; }
+  .wk-bar { position: relative; display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--accent-soft); }
+  .wk-bar i { display: block; height: 100%; }
+  .wk-bar .line { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--text); opacity: 0.7; }
+  .wk-key { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+  .wk-key span { display: inline-flex; align-items: center; gap: 6px; }
+  .wk-key i { width: 10px; height: 10px; border-radius: 3px; }
+  .wk-verdict { margin: 14px 0 0; font-size: 13.5px; line-height: 1.55; }
+  .wk-verdict b { font-weight: 700; }
+  .wk-day .fine { margin-top: 10px; }
+  .wk-notes { margin: 10px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.6; color: var(--muted); }
+  .wk-notes li + li { margin-top: 6px; }
+  .wk-notes b { color: var(--text); }
+  .tr-table .wk-link { color: inherit; font-weight: 650; text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+  .tr-table .wk-link:hover { text-decoration-color: currentColor; }
+  .tr-chart.wt-open .bar { cursor: pointer; }
+  .tip-foot { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); color: var(--muted); font-size: 11.5px; }
   .tr-table.wt-table .goal-row td:first-child { font-weight: 700; }
   .tr-table.wt-table .now-row td { color: var(--muted); }
   .gl-presets { margin-top: 16px; flex-wrap: wrap; }
@@ -628,6 +659,10 @@
     .tr-table.wt-table tr { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .tr-table.wt-table td:first-child { grid-column: 1 / -1; font-weight: 700; }
     .tr-table.wt-table td:nth-child(2) { grid-column: auto; }
+    .tr-table.wk-food tr { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .wk-nav { width: 100%; }
+    .wk-meters { grid-template-columns: auto minmax(0, 1fr); }
+    .wk-meters > b { grid-column: 1 / -1; text-align: left; margin-top: -4px; }
     .gl-sliders, .gl-cards { grid-template-columns: minmax(0, 1fr); }
     .gl-presets { display: flex; width: 100%; }
     .gl-presets button { flex: 1 1 auto; padding: 0 8px; font-size: 13px; }
@@ -893,20 +928,20 @@
 
     <section class="card tr-card" aria-labelledby="wtKcalTitle">
       <h2 id="wtKcalTitle">Calories eaten per day</h2>
-      <p class="tr-sub">Average for each week, from the TOTAL column in your sheet. Hover or tap a week to see carbs, protein and fat.</p>
+      <p class="tr-sub">Average for each week, from the TOTAL column in your sheet. Hover or tap a week to see carbs, protein and fat, and click it (or tap it twice) to open that week day by day.</p>
       <div class="tr-legend">
         <span><i style="background: var(--g1)"></i>Logged</span>
         <span><i class="swatch-faded" style="background: var(--g1)"></i>Estimated (same total repeated)</span>
       </div>
-      <div class="tr-chart fin-chart wt-short" id="wtKcal"></div>
+      <div class="tr-chart fin-chart wt-short wt-open" id="wtKcal"></div>
       <details class="wt-details">
-        <summary>How the macros are worked out</summary>
+        <summary>How the macros and time to process are worked out</summary>
         <p class="fine" id="wtMacroHow"></p>
         <div class="table-wrap">
           <table class="tr-table wt-table mac-table">
             <thead>
               <tr>
-                <th>Food</th><th class="num">Carbs</th><th class="num">Protein</th><th class="num">Fat</th><th class="num">Alcohol</th>
+                <th>Food</th><th class="num">Carbs</th><th class="num">Protein</th><th class="num">Fat</th><th class="num">Alcohol</th><th class="num">Time to process</th>
               </tr>
             </thead>
             <tbody id="wtMacroRows"></tbody>
@@ -930,7 +965,7 @@
 
     <section class="card tr-card" aria-labelledby="wtTableTitle">
       <h2 id="wtTableTitle">Week by week</h2>
-      <p class="tr-sub">Newest first. Each week runs Sunday to Saturday, and its change is the next Sunday's weight minus this one.</p>
+      <p class="tr-sub">Newest first. Each week runs Sunday to Saturday, and its change is the next Sunday's weight minus this one. Click a date to open that week day by day.</p>
       <div class="table-wrap">
         <table class="tr-table wt-table wt-weeks">
           <thead>
@@ -1037,6 +1072,30 @@
   </main>
 </div>
 
+<div class="tab-panel" id="tab-week" role="region" aria-labelledby="wkTitle" hidden>
+  <section class="hero">
+    <button type="button" class="wk-back" id="wkBack">&larr; Back to weight progress</button>
+    <span class="eyebrow" id="wkEyebrow"></span>
+    <h1 id="wkTitle"></h1>
+    <div class="wt-hero-row">
+      <p class="lede" id="wkLede"></p>
+      <div class="seg wk-nav" role="group" aria-label="Other weeks">
+        <button type="button" id="wkPrev">&larr; Previous week</button>
+        <button type="button" id="wkNext">Next week &rarr;</button>
+      </div>
+    </div>
+  </section>
+
+  <main class="trends">
+    <div class="tiles" id="wkTiles"></div>
+    <div class="wk-days" id="wkDays"></div>
+    <section class="card tr-card" aria-labelledby="wkNotesTitle">
+      <h2 id="wkNotesTitle">How this page works it out</h2>
+      <ul class="wk-notes" id="wkNotes"></ul>
+    </section>
+  </main>
+</div>
+
 <script src="data/junk_food.js"></script>
 <script src="data/finance.js"></script>
 <script src="data/weight.js"></script>
@@ -1055,7 +1114,48 @@
   const fromHash = location.hash.slice(1);
   if (fromHash !== 'flow' && panels[fromHash]) tab = fromHash;
 
+  /* Week page: #week-YYYY-MM-DD opens one week of the weight tab day by day. The weight script renders it */
+  const weekPanel = $('tab-week');
+  const WEEK_HASH = /^#week-(\d{4}-\d{2}-\d{2})$/;
+  const startWeek = location.hash.match(WEEK_HASH);
+  if (startWeek) tab = 'weight';
+  let weekOpen = null;
+  let returnScroll = 0;
+  function openWeek(start) {
+    if (!weekOpen) returnScroll = scrollY;
+    const changed = weekOpen !== start;
+    weekOpen = start;
+    tabBtns.forEach((b) => {
+      const on = b.dataset.tab === 'weight';
+      b.setAttribute('aria-selected', String(on));
+      b.tabIndex = on ? 0 : -1;
+    });
+    for (const el of Object.values(panels)) el.hidden = true;
+    weekPanel.hidden = false;
+    dispatchEvent(new CustomEvent('craving:week', { detail: start }));
+    if (changed) {
+      if (!reduceMotion.matches) { weekPanel.classList.remove('enter'); void weekPanel.offsetWidth; weekPanel.classList.add('enter'); }
+      scrollTo(0, 0);
+    }
+  }
+  function closeWeek() {
+    if (!weekOpen) return false;
+    weekOpen = null;
+    weekPanel.hidden = true;
+    return true;
+  }
+  addEventListener('hashchange', () => {
+    const m = location.hash.match(WEEK_HASH);
+    if (m) { openWeek(m[1]); return; }
+    if (!weekOpen) return;
+    const id = location.hash.slice(1);
+    setTab(panels[id] ? id : 'weight', false);
+    requestAnimationFrame(() => scrollTo(0, returnScroll));
+  });
+
   function setTab(id, animate) {
+    const wasWeek = closeWeek();
+    if (wasWeek && id === 'weight') animate = true;
     tab = id;
     tabBtns.forEach((b) => {
       const on = b.dataset.tab === id;
@@ -1072,7 +1172,7 @@
     if (id === 'trends' && D) renderChart();
   }
   tabBtns.forEach((b, i) => {
-    b.addEventListener('click', () => { if (b.dataset.tab !== tab) setTab(b.dataset.tab, true); });
+    b.addEventListener('click', () => { if (b.dataset.tab !== tab || weekOpen) setTab(b.dataset.tab, true); });
     b.addEventListener('keydown', (ev) => {
       if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight') return;
       const next = tabBtns[(i + (ev.key === 'ArrowRight' ? 1 : tabBtns.length - 1)) % tabBtns.length];
@@ -1082,7 +1182,10 @@
   });
   // The flowchart script writes the craving into the hash on load, so restore the open tab's hash after it runs
   addEventListener('DOMContentLoaded', () => {
-    if (tab !== 'flow') try { history.replaceState(null, '', '#' + tab); } catch (e) {}
+    if (startWeek) {
+      try { history.replaceState(null, '', startWeek[0]); } catch (e) {}
+      openWeek(startWeek[1]);
+    } else if (tab !== 'flow') try { history.replaceState(null, '', '#' + tab); } catch (e) {}
   });
 
   if (!D) {
@@ -1766,7 +1869,7 @@
   };
 
   function makeChart(box, opts) {
-    const svg = make('svg', { tabindex: 0, role: 'group', 'aria-label': `${opts.label}. Use the left and right arrow keys to read each week.` }, box);
+    const svg = make('svg', { tabindex: 0, role: 'group', 'aria-label': `${opts.label}. Use the left and right arrow keys to read each week.${opts.open ? ' Press Enter to open that week day by day.' : ''}` }, box);
     const tip = document.createElement('div');
     tip.className = 'tip';
     box.appendChild(tip);
@@ -1893,6 +1996,12 @@
         tip.appendChild(row);
       }
       if (!t.rows.length) tot.style.marginBottom = '0';
+      if (t.foot) {
+        const f = document.createElement('div');
+        f.className = 'tip-foot';
+        f.textContent = t.foot;
+        tip.appendChild(f);
+      }
       const tw = tip.offsetWidth;
       let left = cx + 14;
       if (left + tw > geo.W) left = cx - 14 - tw;
@@ -1900,13 +2009,25 @@
       tip.style.top = geo.mt + 'px';
       tip.classList.add('show');
     }
-    const pick = (ev) => {
-      if (!geo) return;
+    const indexAt = (ev) => {
+      if (!geo) return null;
       const i = Math.floor((ev.clientX - svg.getBoundingClientRect().left - geo.ml) / geo.band);
-      if (i >= 0 && i < geo.n && i !== active) setActive(i);
+      return i >= 0 && i < geo.n ? i : null;
     };
-    svg.addEventListener('pointerdown', pick);
+    const pick = (ev) => {
+      const i = indexAt(ev);
+      if (i != null && i !== active) setActive(i);
+    };
+    // With opts.open, a mouse click opens the week straight away. On touch the first tap shows the readout and a second tap on the same week opens it
+    let downOn = null;
+    svg.addEventListener('pointerdown', (ev) => { downOn = active; pick(ev); });
     svg.addEventListener('pointermove', pick);
+    if (opts.open) {
+      svg.addEventListener('click', (ev) => {
+        const i = indexAt(ev);
+        if (i != null && downOn === i && i === active) opts.open(i);
+      });
+    }
     svg.addEventListener('pointerleave', (ev) => { if (ev.pointerType === 'mouse' && document.activeElement !== svg) setActive(null); });
     document.addEventListener('pointerdown', (ev) => { if (active != null && !svg.contains(ev.target) && document.activeElement !== svg) setActive(null); });
     svg.addEventListener('focus', () => setActive(active ?? (geo ? geo.n - 1 : null)));
@@ -1920,6 +2041,7 @@
       else if (ev.key === 'Home') next = 0;
       else if (ev.key === 'End') next = last;
       else if (ev.key === 'Escape') { svg.blur(); return; }
+      else if (ev.key === 'Enter' && opts.open && active != null) { ev.preventDefault(); opts.open(active); return; }
       if (next == null) return;
       ev.preventDefault();
       setActive(next);
@@ -2007,6 +2129,8 @@
   });
 
   const shortHeight = (width) => (width < 560 ? 180 : 210);
+  const coarse = matchMedia('(pointer: coarse)');
+  const openWeekPage = (start) => openWeekFromChart(start);
   const chartKcal = makeChart($('wtKcal'), {
     label: 'Calories eaten per day, averaged by week',
     height: shortHeight,
@@ -2024,8 +2148,9 @@
       ] : [];
       if (m && m.alcoholKcal) rows.push({ label: 'a day from alcohol', value: `${int(m.alcoholKcal)} kcal` });
       if (w.estimated) rows.push({ label: 'days estimated', value: String(w.repeatedDays) });
-      return { head: weekHead(i), value: w.kcal == null ? 'Not logged' : `${int(w.kcal)} kcal a day`, rows };
+      return { head: weekHead(i), value: w.kcal == null ? 'Not logged' : `${int(w.kcal)} kcal a day`, rows, foot: `${coarse.matches ? 'Tap again' : 'Click'} to see each day` };
     },
+    open: (i) => openWeekPage(weeks[i].start),
   });
   const chartSteps = makeChart($('wtSteps'), {
     label: 'Steps per day, averaged by week',
@@ -2072,13 +2197,18 @@
     for (const w of shown) {
       const tr = document.createElement('tr');
       addCells(tr, heads, [
-        fullDate(toDate(w.start)) + (w.days < 7 ? ' (so far)' : ''),
+        '',
         mass(w.kg),
         w.change == null ? '—' : signedMass(w.change),
         w.kcal == null ? '—' : int(w.kcal) + (w.estimated ? ' †' : ''),
         w.steps == null ? '—' : int(w.steps),
         w.cyclingMin ? `${int(w.cyclingMin)} min` : '—',
       ]);
+      const a = document.createElement('a');
+      a.className = 'wk-link';
+      a.href = '#week-' + w.start;
+      a.textContent = fullDate(toDate(w.start));
+      tr.firstChild.append(a, w.days < 7 ? ' (so far)' : '');
       $('wtRows').appendChild(tr);
     }
     $('wtMore').textContent = showAllWeeks ? 'Show the latest 8 weeks' : `Show all ${weeks.length} weeks`;
@@ -2087,14 +2217,19 @@
   }
   $('wtMore').addEventListener('click', () => { showAllWeeks = !showAllWeeks; renderWeightTab(); });
 
-  /* The macro split each food uses */
+  /* The macro split and time to process each food uses */
+  const hoursText = (h) => {
+    if (h == null) return '—';
+    if (h < 1) return `about ${Math.round(h * 60)} min`;
+    return `about ${+h.toFixed(1)} h`;
+  };
   const macroHeads = headsOf('.mac-table');
   const macroDefault = W.macros.default;
   const assumedFoods = W.macros.assumed;
-  $('wtMacroHow').textContent = `Each food's calories are split into carbs, protein and fat using the shares below, then turned into grams at 4 kcal per gram of carbs or protein and 9 kcal per gram of fat. The shares are typical values for each food, not measurements. Alcohol has its own calories, so it's shown separately. A new food column uses the ${macroDefault} split until it gets its own row in update_weight.py.` + (assumedFoods.length ? ` Using the ${macroDefault} split for now: ${assumedFoods.join(', ')}.` : '');
+  $('wtMacroHow').textContent = `Each food's calories are split into carbs, protein and fat using the shares below, then turned into grams at 4 kcal per gram of carbs or protein and 9 kcal per gram of fat. The shares are typical values for each food, not measurements. Alcohol has its own calories, so it's shown separately. Time to process is roughly how long a typical serving takes to digest: drinks and fruit pass quickly, while fat, fried food and red meat take longest. For alcohol it's the time the liver takes to clear one drink. A new food column uses the ${macroDefault} split and time until it gets its own row in update_weight.py.` + (assumedFoods.length ? ` Using the ${macroDefault} values for now: ${assumedFoods.join(', ')}.` : '');
   for (const f of W.macros.foods) {
     const tr = document.createElement('tr');
-    addCells(tr, macroHeads, [f.food, `${f.carbs}%`, `${f.protein}%`, `${f.fat}%`, f.alcohol ? `${f.alcohol}%` : '—']);
+    addCells(tr, macroHeads, [f.food, `${f.carbs}%`, `${f.protein}%`, `${f.fat}%`, f.alcohol ? `${f.alcohol}%` : '—', hoursText(f.hours)]);
     $('wtMacroRows').appendChild(tr);
   }
 
@@ -2425,12 +2560,274 @@
   ];
   $('glUpdate').prepend(`Data last pulled ${fullDate(toDate(W.generated))}. `);
 
+  /* ---------- Week page: one week day by day ---------- */
+  const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const foodInfo = Object.fromEntries(W.macros.foods.map((f) => [f.food, f]));
+  const fallbackFood = foodInfo[W.macros.default];
+  const infoOf = (name) => foodInfo[name] || fallbackFood;
+  const assumed = new Set(W.macros.assumed);
+  const KCAL_PER_G = { carbs: 4, protein: 4, fat: 9 };
+  const grams = (name, kcal, key) => (kcal * infoOf(name)[key]) / 100 / KCAL_PER_G[key];
+  // Weight on a given day, read off the line between this Sunday's weigh-in and the next
+  const kgOn = (w, i) => (w.change == null ? w.kg : w.kg + (w.change * i) / 7);
+  function balanceOf(w, i, d) {
+    const kg = kgOn(w, i);
+    const rest = 10 * kg + REST_BASE + W.calibration.offset;
+    const walk = kg * stepRate(d.steps || 0);
+    const cycle = kg * cycleRate(d.cycling || 0);
+    const burn = rest + walk + cycle;
+    const logged = d.kcal > 0;
+    // deficit > 0 means you burned more than you ate
+    const deficit = burn - d.kcal;
+    const kind = !logged ? 'none' : deficit < 0 ? 'surplus' : d.kcal <= rest ? 'rest' : 'moved';
+    return { kg, rest, walk, cycle, burn, deficit, logged, kind };
+  }
+  const kcalText = (v) => `${int(v)} kcal`;
+  const stepsFor = (kcal, kg) => kcal / (kg * stepRate(1));
+  const minutesFor = (kcal, kg) => kcal / (kg * cycleRate(1));
+
+  let fromSite = false;
+  const goWeek = (start) => { fromSite = true; location.hash = 'week-' + start; };
+  // Used by the calorie chart and the week table above
+  const openWeekFromChart = goWeek;
+  $('wtRows').addEventListener('click', (ev) => { if (ev.target.closest('.wk-link')) fromSite = true; });
+  $('wkBack').addEventListener('click', () => { if (fromSite) history.back(); else location.replace('#weight'); });
+  addEventListener('hashchange', () => { if (!location.hash.startsWith('#week-')) fromSite = false; });
+
+  function verdictOf(b, d) {
+    const moved = b.walk + b.cycle;
+    const movedText = b.walk && b.cycle ? `walking (${kcalText(b.walk)}) and cycling (${kcalText(b.cycle)})`
+      : b.walk ? `walking (${kcalText(b.walk)})` : b.cycle ? `cycling (${kcalText(b.cycle)})` : '';
+    if (b.kind === 'none') return [['Nothing logged', ' for food this day, so there is no deficit to work out.']];
+    if (b.kind === 'rest') {
+      return [['Deficit before you even moved.', ` You ate ${kcalText(d.kcal)}, less than the ${kcalText(b.rest)} you burn at rest.` +
+        (moved ? ` ${movedText[0].toUpperCase() + movedText.slice(1)} added ${kcalText(moved)} more on top.` : ' No walking or cycling was logged.')]];
+    }
+    if (b.kind === 'moved') {
+      return [['Walking and cycling created the deficit.', ` You ate ${kcalText(d.kcal)}, which is ${kcalText(d.kcal - b.rest)} more than you burn at rest. ` +
+        `${movedText[0].toUpperCase() + movedText.slice(1)} burned ${kcalText(moved)}, which covered it with ${kcalText(b.deficit)} to spare.`]];
+    }
+    const over = -b.deficit;
+    return [['Not enough to make a deficit.', (moved ? ` ${movedText[0].toUpperCase() + movedText.slice(1)} burned ${kcalText(moved)}, but` : ' No walking or cycling was logged, and') +
+      ` you ate ${kcalText(over)} more than you burned. Breaking even would have taken about ${int(Math.ceil(stepsFor(over, b.kg) / 100) * 100)} more steps or ${int(Math.ceil(minutesFor(over, b.kg) / 5) * 5)} more minutes of cycling.`]];
+  }
+
+  function meterRow(label, segs, total, max, marker) {
+    const frag = document.createDocumentFragment();
+    const name = document.createElement('span');
+    name.textContent = label;
+    const bar = document.createElement('div');
+    bar.className = 'wk-bar';
+    for (const sg of segs) {
+      if (!sg.v) continue;
+      const i = document.createElement('i');
+      i.style.width = `${(sg.v / max) * 100}%`;
+      i.style.background = sg.color;
+      i.title = `${sg.label}: ${kcalText(sg.v)}`;
+      bar.appendChild(i);
+    }
+    if (marker != null) {
+      const ln = document.createElement('span');
+      ln.className = 'line';
+      ln.style.left = `calc(${Math.min(100, (marker / max) * 100)}% - 1px)`;
+      ln.title = `Eaten: ${kcalText(marker)}`;
+      bar.appendChild(ln);
+    }
+    const val = document.createElement('b');
+    val.textContent = kcalText(total);
+    frag.append(name, bar, val);
+    return frag;
+  }
+
+  const foodHeads = ['Food', 'Calories', 'Carbs', 'Protein', 'Fat', 'Time to process'];
+  function foodTable(d) {
+    const wrap = document.createElement('div');
+    wrap.className = 'table-wrap';
+    const table = document.createElement('table');
+    table.className = 'tr-table wt-table wk-food';
+    const thead = table.createTHead().insertRow();
+    foodHeads.forEach((h, j) => { const th = document.createElement('th'); th.textContent = h; if (j) th.className = 'num'; thead.appendChild(th); });
+    const tbody = table.createTBody();
+    const sum = { carbs: 0, protein: 0, fat: 0 };
+    for (const [name, kcal] of [...d.foods].sort((a, b) => b[1] - a[1])) {
+      const g = Object.fromEntries(Object.keys(sum).map((k) => [k, grams(name, kcal, k)]));
+      Object.keys(sum).forEach((k) => { sum[k] += g[k]; });
+      const alcohol = infoOf(name).alcohol;
+      addCells(tbody.insertRow(), foodHeads, [name + (assumed.has(name) ? ' *' : ''), kcalText(kcal), `${int(g.carbs)} g`, `${int(g.protein)} g`,
+        `${int(g.fat)} g` + (alcohol ? ` + ${int((kcal * alcohol) / 100)} kcal alcohol` : ''), hoursText(infoOf(name).hours)]);
+    }
+    const foot = table.createTFoot().insertRow();
+    addCells(foot, foodHeads, ['Total', kcalText(d.foods.reduce((t, f) => t + f[1], 0)), `${int(sum.carbs)} g`, `${int(sum.protein)} g`, `${int(sum.fat)} g`, '']);
+    wrap.appendChild(table);
+    return wrap;
+  }
+
+  function renderWeekPage(start) {
+    const idx = weeks.findIndex((w) => w.start === start);
+    const days = $('wkDays');
+    days.replaceChildren();
+    $('wkTiles').replaceChildren();
+    if (idx < 0) {
+      $('wkEyebrow').textContent = 'Week not found';
+      $('wkTitle').textContent = 'No weigh-in on that date.';
+      $('wkLede').textContent = 'Each week starts on a Sunday weigh-in. Go back to the weight tab and pick a week from the calorie chart.';
+      $('wkPrev').disabled = $('wkNext').disabled = true;
+      $('wkNotes').replaceChildren();
+      return;
+    }
+    const w = weeks[idx];
+    const start0 = toDate(w.start);
+    const end0 = addDays(start0, 6);
+    document.title = `Week of ${fullDate(start0)} · Craving Control`;
+    $('wkEyebrow').textContent = `Week ${idx + 1} of ${weeks.length}${w.days < 7 ? ' · so far' : ''}`;
+    $('wkTitle').innerHTML = '';
+    $('wkTitle').append('Week of ');
+    const grad = document.createElement('span');
+    grad.className = 'grad';
+    grad.textContent = dayLabel(start0);
+    $('wkTitle').append(grad);
+    $('wkLede').textContent = `${DAY_NAMES[0]} ${fullDate(start0)} to ${DAY_NAMES[6]} ${fullDate(end0)}: everything you ate each day, how long it takes to process, and whether walking and cycling were enough to put you in a deficit.`;
+    $('wkPrev').disabled = idx === 0;
+    $('wkNext').disabled = idx === weeks.length - 1;
+
+    const list = w.daily.map((d) => ({ d, b: balanceOf(w, Math.round((toDate(d.date) - start0) / 864e5), d) }));
+    const logged = list.filter((x) => x.b.logged);
+    const eaten = logged.reduce((t, x) => t + x.d.kcal, 0);
+    const netWeek = logged.reduce((t, x) => t + x.b.deficit, 0);
+    const deficitDays = logged.filter((x) => x.b.deficit >= 0);
+    const movedDays = logged.filter((x) => x.b.kind === 'moved');
+    fillTiles($('wkTiles'), [
+      { label: 'Weight', val: massNum(w.kg), small: unit,
+        sub: w.change == null ? `Weighed ${dayLabel(start0)}. Waiting on the next weigh-in.` : `${signedMass(w.change)} by the next Sunday (${mass(w.kg + w.change)})` },
+      { label: 'Eaten', val: logged.length ? int(eaten / logged.length) : '—', small: 'kcal/day',
+        sub: logged.length ? `${int(eaten)} kcal over ${logged.length} logged day${logged.length === 1 ? '' : 's'}` : 'No food logged' },
+      { label: netWeek >= 0 ? "Week's deficit" : "Week's surplus", val: int(Math.abs(netWeek)), small: 'kcal',
+        sub: `About ${mass(Math.abs(netWeek) / KCAL_PER_KG)} ${netWeek >= 0 ? 'lost' : 'gained'} at 7,700 kcal per kg` + (w.change != null ? `. The scale showed ${signedMass(w.change)}.` : '.') },
+      { label: 'Days in deficit', val: `${deficitDays.length} of ${logged.length}`,
+        sub: movedDays.length ? `Walking and cycling made the difference on ${movedDays.length} of them` : deficitDays.length ? 'Each was below your resting burn without help' : 'Walking and cycling never covered what you ate' },
+    ]);
+
+    const max = Math.max(...list.map((x) => Math.max(x.b.burn, x.d.kcal)), 1);
+    for (const { d, b } of list) {
+      const date = toDate(d.date);
+      const card = document.createElement('section');
+      card.className = 'card tr-card wk-day';
+      const head = document.createElement('div');
+      head.className = 'wk-day-head';
+      const left = document.createElement('div');
+      const h2 = document.createElement('h2');
+      h2.textContent = `${DAY_NAMES[date.getDay()]}, ${dayLabel(date)}`;
+      const sub = document.createElement('p');
+      sub.className = 'tr-sub';
+      sub.textContent = [
+        b.logged ? `Ate ${kcalText(d.kcal)}` : 'No food logged',
+        d.steps == null ? 'steps not logged' : `${int(d.steps)} steps`,
+        d.cycling ? `${int(d.cycling)} min cycling` : 'no cycling',
+      ].join(' · ');
+      left.append(h2, sub);
+      const badge = document.createElement('span');
+      badge.className = 'wk-badge ' + (b.kind === 'none' ? 'none' : b.deficit >= 0 ? 'good' : 'bad');
+      badge.textContent = b.kind === 'none' ? 'Not logged' : b.deficit >= 0 ? `Deficit ${kcalText(b.deficit)}` : `Surplus ${kcalText(-b.deficit)}`;
+      head.append(left, badge);
+      card.appendChild(head);
+
+      const meters = document.createElement('div');
+      meters.className = 'wk-meters';
+      meters.append(
+        meterRow('Burned', [
+          { label: 'At rest', v: b.rest, color: 'var(--g1)' },
+          { label: 'Walking', v: b.walk, color: 'var(--g3)' },
+          { label: 'Cycling', v: b.cycle, color: 'var(--g4)' },
+        ], b.burn, max, b.logged ? d.kcal : null),
+        meterRow('Eaten', [{ label: 'Eaten', v: d.kcal, color: 'var(--g2)' }], d.kcal, max),
+      );
+      const key = document.createElement('div');
+      key.className = 'wk-key';
+      for (const [label, color, v] of [['At rest', 'var(--g1)', b.rest], ['Walking', 'var(--g3)', b.walk], ['Cycling', 'var(--g4)', b.cycle]]) {
+        const sp = document.createElement('span');
+        const i = document.createElement('i');
+        i.style.background = color;
+        sp.append(i, `${label} ${kcalText(v)}`);
+        key.appendChild(sp);
+      }
+      if (b.logged) {
+        const sp = document.createElement('span');
+        const i = document.createElement('i');
+        i.style.cssText = 'width: 2px; height: 12px; border-radius: 0; background: var(--text); opacity: 0.7';
+        sp.append(i, 'what you ate');
+        key.appendChild(sp);
+      }
+      const verdict = document.createElement('p');
+      verdict.className = 'wk-verdict';
+      for (const [strong, rest] of verdictOf(b, d)) {
+        const bEl = document.createElement('b');
+        bEl.textContent = strong;
+        verdict.append(bEl, rest);
+      }
+      card.append(meters, key, verdict);
+
+      if (d.foods.length) {
+        card.appendChild(foodTable(d));
+        const slow = d.foods.reduce((a, f) => (infoOf(f[0]).hours > infoOf(a[0]).hours ? f : a));
+        const fine = document.createElement('p');
+        fine.className = 'fine';
+        const sheet = d.sheetDeficit;
+        fine.textContent = `Slowest to process: ${slow[0]}, ${hoursText(infoOf(slow[0]).hours)}.` +
+          (d.repeated ? ' This calorie total repeats for 5 or more days in a row, so it may be an estimate rather than a log.' : '') +
+          (b.logged ? ` Your sheet's DEFICIT column: ${sheet >= 0 ? `${kcalText(sheet)} deficit` : `${kcalText(-sheet)} surplus`}.` : '') +
+          (d.foods.some((f) => assumed.has(f[0])) ? ` * Uses the ${W.macros.default} values until it gets its own row.` : '');
+        card.appendChild(fine);
+      }
+      days.appendChild(card);
+    }
+    if (w.days < 7) {
+      const p = document.createElement('p');
+      p.className = 'tr-update';
+      p.textContent = `Only ${w.days} day${w.days === 1 ? '' : 's'} of this week ${w.days === 1 ? 'is' : 'are'} in the sheet so far.`;
+      days.appendChild(p);
+    }
+
+    // How far the sheet's own DEFICIT column sits from this page, on the days logged this week
+    const gaps = logged.map((x) => x.d.sheetDeficit - x.b.deficit);
+    const gap = gaps.length ? gaps.reduce((t, g) => t + g, 0) / gaps.length : null;
+    const notes = [
+      ['What you burn', ` is three parts. At rest uses Mifflin-St Jeor (age ${AGE}, male, ${HEIGHT_CM} cm) at that day's weight, read off the line between this Sunday's weigh-in and the next. It includes the ${W.calibration.offset < 0 ? '−' : '+'}${int(Math.abs(W.calibration.offset))} kcal a day calibration to your scale from the weight tab. Walking and cycling use the step and cycling formulas from your sheet.`],
+      ['Deficit', ' is what you burned minus what you ate. 7,700 kcal is about 1 kg, so a 500 kcal deficit every day is roughly 0.45 kg a week.'],
+      ['Walking and cycling created the deficit', ' when what you ate was above your resting burn but below rest plus walking plus cycling. Without the movement, that day would have been a surplus.'],
+      ['Time to process', " is roughly how long a typical serving takes to digest. Sugary drinks and fruit pass in under an hour, rice and eggs in about 2 hours, and fat, fried food, red meat and big mixed meals like biryani take 4 to 5. For alcohol it's the time the liver takes to clear one drink. These are typical values, not measurements, and a big meal takes longer than a small one."],
+      ['Macros', ' use the same split for each food as the calorie chart on the weight tab.'],
+    ];
+    if (gap != null && Math.abs(gap) >= 50) {
+      notes.push(["Your sheet's DEFICIT column", ` comes out about ${kcalText(Math.abs(gap))} a day ${gap > 0 ? 'more generous' : 'less generous'} than this page for this week. The sheet adds a flat workout burn and isn't adjusted to how your scale actually moved, so this page's numbers are the ones the goal dates use.`]);
+    }
+    $('wkNotes').replaceChildren();
+    for (const [title, body] of notes) {
+      const li = document.createElement('li');
+      const bEl = document.createElement('b');
+      bEl.textContent = title;
+      li.append(bEl, body);
+      $('wkNotes').appendChild(li);
+    }
+  }
+  let weekShown = null;
+  addEventListener('craving:week', (ev) => { weekShown = ev.detail; renderWeekPage(weekShown); });
+  addEventListener('hashchange', () => { if (!location.hash.startsWith('#week-')) { weekShown = null; document.title = baseTitle; } });
+  const baseTitle = document.title;
+  const stepWeek = (dir) => {
+    const i = weeks.findIndex((w) => w.start === weekShown);
+    const next = weeks[i + dir];
+    if (next) location.replace('#week-' + next.start);
+  };
+  $('wkPrev').addEventListener('click', () => stepWeek(-1));
+  $('wkNext').addEventListener('click', () => stepWeek(1));
+
   /* Unit switch, shared by both tabs */
   const unitBtns = [...document.querySelectorAll('.wt-unit button')];
   function renderAll() {
     unitBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.unit === unit)));
     renderWeightTab();
     renderGoals();
+    if (weekShown) renderWeekPage(weekShown);
     $('glNotes').replaceChildren();
     for (const n of buildNotes()) {
       const li = document.createElement('li');

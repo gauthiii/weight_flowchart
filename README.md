@@ -5,7 +5,7 @@ A small personal site for cutting down on junk food and keeping an eye on money.
 - **Craving flowchart** – an interactive decision chart for my top 10 junk foods from the expense sheet (biryani, Popeyes/KFC, Maggi, Burger King, nuggets, ice cream, Nutella, brownies & cookies, pizza, Sunny D). Each craving gets six better options, best match first: tilapia, shrimp, chicken breast or an omelette for the savory ones; blueberry Greek yogurt, a protein shake, frozen banana or grapes, strawberries or oranges for the sweet ones; and a Great Value electrolyte drink for Sunny D. It walks you through one "is it available?" question at a time and shows what giving in would cost, including how many times you've bought it.
 - **Monthly trends** – charts built from my expense sheet: which unhealthy foods I buy most, how many calories they add up to, and how that changes month by month.
 - **Finances** – from my first paycheck (February 2026) on: income (salary + tuition), expenses paid from salary, money sent to India, investments, and how much was saved each month and in total.
-- **Weight progress** – every Sunday weigh-in in kg or lb, how much was lost or gained each week, and calories, steps and cycling alongside.
+- **Weight progress** – every Sunday weigh-in in kg or lb, how much was lost or gained each week, and calories, steps and cycling alongside. Click a week in the calorie chart (or a date in the week table) to open that week day by day.
 - **Goal dates** – projected dates for 120, 100 and 80 kg from calories, steps, cycling, how my weight has actually responded, and my age and sex. Includes current BMI, estimated body fat, BMI milestones, a what-if planner, and how much water to drink a day at any weight (35 ml per kg, with a slider to compare against your current weight and goals).
 
 **Live site:** https://gauthiii.github.io/weight_flowchart/
@@ -73,9 +73,20 @@ Built from the [calorie counter sheet](https://docs.google.com/spreadsheets/d/1L
 - **Projection** runs in the browser, day by day: (calories − burn) ÷ 7,700 kcal per kg, with burn falling as weight falls. Current habits are the last 28 days' averages.
 - **Body fat** is estimated with the CUN-BAE equation from BMI, age and sex.
 
-- **Macros** (the calorie chart's tooltip): each food column's calories are split into carbs, protein and fat using `FOOD_MACROS` in `update_weight.py`, then turned into grams at 4 kcal per gram of carbs or protein and 9 kcal per gram of fat. A new food column uses the biryani split until it gets its own row, and the Action log names it.
+- **Macros** (the calorie chart's tooltip): each food column's calories are split into carbs, protein and fat using `FOOD_MACROS` in `update_weight.py`, then turned into grams at 4 kcal per gram of carbs or protein and 9 kcal per gram of fat. A new food column uses the biryani values until it gets its own row, and the Action log names it.
+- **Time to process**: the fifth value in each `FOOD_MACROS` row, in hours. It's roughly how long a typical serving takes to digest (drinks and fruit under an hour, fat, fried food and big mixed meals 4–5 hours; for alcohol, the time the liver takes to clear a drink). Typical values, not measurements.
 
-To change age or height, edit `AGE` and `HEIGHT_CM` in `update_weight.py`. To change a food's macros, edit its row in `FOOD_MACROS`.
+### Week page
+
+Clicking a bar in **Calories eaten per day** (tap twice on a phone, or press Enter on the focused chart) opens `#week-YYYY-MM-DD`, a page for that Sunday-to-Saturday week. The browser's back button returns to the chart. It shows:
+
+- the week's weight and change, average calories, total deficit or surplus, and how many days were in deficit
+- for each day: every food eaten with its calories, carbs, protein, fat and time to process, plus the slowest food to process
+- burned vs eaten for each day, split into at rest, walking and cycling, and a verdict: in deficit even before moving, **walking and cycling created the deficit** (ate more than the resting burn, but less than rest + walking + cycling), or not enough, with how many more steps or cycling minutes would have broken even
+
+Burn here uses the same model as the goal dates: Mifflin-St Jeor at that day's weight (read between the two Sunday weigh-ins) plus the calibration offset, and the sheet's step and cycling formulas. The sheet's own `DEFICIT` column is shown for comparison. It comes out higher because it adds a flat workout burn and isn't calibrated.
+
+To change age or height, edit `AGE` and `HEIGHT_CM` in `update_weight.py`. To change a food's macros or time to process, edit its row in `FOOD_MACROS`.
 
 ## Files
 
@@ -85,7 +96,7 @@ To change age or height, edit `AGE` and `HEIGHT_CM` in `update_weight.py`. To ch
 | `update_sheet.py` | Downloads the sheet and regenerates the data files. Python standard library only. |
 | `update_weight.py` | Downloads the calorie sheet and regenerates the weight data. Python standard library only. |
 | `data/calories.csv` | The full calorie sheet as exported by Google. |
-| `data/weight.js` | Generated. Weekly weight, calories, steps, cycling and calibration for the weight and goals tabs. |
+| `data/weight.js` | Generated. Weekly weight, calories, steps, cycling, calibration and each day's foods for the weight, week and goals pages. |
 | `data/expenses.csv` | The full sheet as exported by Google. |
 | `data/junk_food.js` | Generated. Monthly counts, spend and summary for the trends tab. |
 | `data/finance.js` | Generated. Monthly income, expenses, India transfers, investments and savings for the finances tab. |
