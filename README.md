@@ -6,7 +6,7 @@ A small personal site for cutting down on junk food and keeping an eye on money.
 - **Monthly trends** – charts built from my expense sheet: which unhealthy foods I buy most, how many calories they add up to, and how that changes month by month.
 - **Finances** – from my first paycheck (February 2026) on: income (salary + tuition), expenses paid from salary, money sent to India, investments, and how much was saved each month and in total.
 - **Weight progress** – every Sunday weigh-in in kg or lb, how much was lost or gained each week, and calories, steps and cycling alongside. Click a week in the calorie chart (or a date in the week table) to open that week day by day.
-- **Goal dates** – projected dates for 120, 100 and 80 kg from calories, steps, cycling, how my weight has actually responded, and my age and sex. Includes current BMI, estimated body fat, BMI milestones, a what-if planner, and how much water to drink a day at any weight (35 ml per kg, with a slider to compare against your current weight and goals).
+- **Goal dates** – projected dates for 120, 100 and 80 kg from calories, steps, cycling, how my weight has actually responded, and my age and sex. Includes current BMI, estimated body fat, BMI milestones, a what-if planner with protein, carbs and fat sliders tied to the calorie slider, and how much water to drink a day at any weight (35 ml per kg, with a slider to compare against your current weight and goals).
 
 **Live site:** https://gauthiii.github.io/weight_flowchart/
 
@@ -81,10 +81,17 @@ Built from the [calorie counter sheet](https://docs.google.com/spreadsheets/d/1L
 Clicking a bar in **Calories eaten per day** (tap twice on a phone, or press Enter on the focused chart) opens `#week-YYYY-MM-DD`, a page for that Sunday-to-Saturday week. The browser's back button returns to the chart. It shows:
 
 - the week's weight and change, average calories, total deficit or surplus, and how many days were in deficit
+- protein each day against what you need, with each day's protein deficit or surplus in grams, the week's average, how many days hit the target, and the foods most of it came from
 - for each day: every food eaten with its calories, carbs, protein, fat and time to process, plus the slowest food to process
 - burned vs eaten for each day, split into at rest, walking and cycling, and a verdict: in deficit even before moving, **walking and cycling created the deficit** (ate more than the resting burn, but less than rest + walking + cycling), or not enough, with how many more steps or cycling minutes would have broken even
 
 Burn here uses the same model as the goal dates: Mifflin-St Jeor at that day's weight (read between the two Sunday weigh-ins) plus the calibration offset, and the sheet's step and cycling formulas. The sheet's own `DEFICIT` column is shown for comparison. It comes out higher because it adds a flat workout burn and isn't calibrated.
+
+### Protein and macros
+
+- **Protein needed** is 1.6 g a day per kg of lean mass (weight minus the CUN-BAE body fat estimate), about 128 g at 150 kg. Change `PROTEIN_PER_LEAN_KG` in `index.html` to use a different target. The week page works it out at each day's weight.
+- **Macro sliders** on the goal page: calories always equal 4 kcal per gram of protein and carbs plus 9 per gram of fat. Moving the calorie slider keeps the same mix. Moving a macro changes calories (*Calories follow*), or with *Keep calories* takes the difference out of the other two in proportion. Presets fill the macros from the last 28 days and the best stretch (`habits.macros` and `best.macros` in `weight.js`).
+- **How macros change fat loss:** protein costs about 25% of its calories to digest, carbs 7.5% and fat 2%. The calibration already includes your usual mix, so only a different mix moves the burn. Forbes' rule estimates how much of a loss is lean tissue rather than fat, and eating the protein you need is taken to roughly halve that lean share in a deficit. The goal page shows the fat lost in the first 12 weeks.
 
 To change age or height, edit `AGE` and `HEIGHT_CM` in `update_weight.py`. To change a food's macros or time to process, edit its row in `FOOD_MACROS`.
 

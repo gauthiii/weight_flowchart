@@ -516,6 +516,19 @@
   .gl-balance b { display: block; margin-bottom: 2px; font-size: 18px; font-weight: 800; letter-spacing: -0.02em; color: var(--text); font-variant-numeric: tabular-nums; }
   .gl-verdict { margin: 14px 0 0; font-size: 14px; line-height: 1.55; color: var(--text); }
   .gl-water { margin-top: 18px; max-width: 560px; }
+  .gl-macros { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .gl-macro-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .gl-macro-head h3 { margin: 0; font-size: 15px; font-weight: 750; letter-spacing: -0.01em; }
+  .gl-macro-mode { padding: 4px; border-radius: 13px; }
+  .gl-macro-mode button { height: 32px; padding: 0 12px; font-size: 13px; border-radius: 10px; }
+  .gl-macros .tr-sub { margin-top: 6px; }
+  .gl-macro-bar { margin-top: 18px; }
+  .gl-macros .wk-key { margin-top: 8px; }
+  .wk-badges { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .wk-protein { margin-top: 14px; }
+  .wk-protein > b { font-weight: 600; }
+  .wk-protein .short { color: var(--g2); font-weight: 700; }
+  .wk-protein .over { color: var(--g3); font-weight: 700; }
   .gl-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
   .gl-card { padding: 18px 18px 20px; border-radius: 20px; }
   .gl-card .tile-val { font-size: 25px; white-space: normal; line-height: 1.15; }
@@ -1006,9 +1019,27 @@
       <p class="tr-sub">Start from one of these, or drag the sliders to try your own numbers.</p>
       <div class="seg gl-presets" id="glPresets" role="group" aria-label="Habits to project"></div>
       <div class="gl-sliders">
-        <label class="gl-slider"><span>Calories per day <b id="glKcalVal"></b></span><input type="range" id="glKcal" min="1500" max="4500" step="50"></label>
+        <label class="gl-slider"><span>Calories per day <b id="glKcalVal"></b></span><input type="range" id="glKcal" min="1500" max="4500" step="10"></label>
         <label class="gl-slider"><span>Steps per day <b id="glStepsVal"></b></span><input type="range" id="glSteps" min="0" max="25000" step="500"></label>
         <label class="gl-slider"><span>Cycling per day <b id="glCycleVal"></b></span><input type="range" id="glCycle" min="0" max="120" step="5"></label>
+      </div>
+      <div class="gl-macros">
+        <div class="gl-macro-head">
+          <h3 id="glMacroTitle">Protein, carbs and fat</h3>
+          <div class="seg gl-macro-mode" id="glMacroMode" role="group" aria-label="When you move a macro slider">
+            <button type="button" data-mode="follow" aria-pressed="true">Calories follow</button>
+            <button type="button" data-mode="keep" aria-pressed="false">Keep calories</button>
+          </div>
+        </div>
+        <p class="tr-sub" id="glMacroSub"></p>
+        <div class="gl-sliders">
+          <label class="gl-slider"><span>Protein per day <b id="glProteinVal"></b></span><input type="range" id="glProtein" min="0" max="350" step="1"></label>
+          <label class="gl-slider"><span>Carbs per day <b id="glCarbsVal"></b></span><input type="range" id="glCarbs" min="0" max="650" step="1"></label>
+          <label class="gl-slider"><span>Fat per day <b id="glFatVal"></b></span><input type="range" id="glFat" min="0" max="250" step="1"></label>
+        </div>
+        <div class="wk-bar gl-macro-bar" id="glMacroBar" role="img"></div>
+        <div class="wk-key" id="glMacroKey"></div>
+        <div class="gl-balance" id="glMacroBalance"></div>
       </div>
       <div class="gl-balance" id="glBalance"></div>
       <p class="gl-verdict" id="glVerdict"></p>
@@ -1088,6 +1119,13 @@
 
   <main class="trends">
     <div class="tiles" id="wkTiles"></div>
+    <section class="card tr-card" aria-labelledby="wkProteinTitle">
+      <h2 id="wkProteinTitle">Protein each day</h2>
+      <p class="tr-sub" id="wkProteinSub"></p>
+      <div class="wk-meters wk-protein" id="wkProtein"></div>
+      <div class="wk-key" id="wkProteinKey"></div>
+      <p class="wk-verdict" id="wkProteinVerdict"></p>
+    </section>
     <div class="wk-days" id="wkDays"></div>
     <section class="card tr-card" aria-labelledby="wkNotesTitle">
       <h2 id="wkNotesTitle">How this page works it out</h2>
@@ -1817,6 +1855,12 @@
     const b = bmiOf(kg);
     return -44.988 + 0.503 * AGE + 3.172 * b - 0.026 * b * b - 0.02 * b * AGE + 0.00021 * b * b * AGE;
   };
+  // Protein you need: 1.6 g for each kg of lean mass (weight minus estimated body fat). Total body weight overstates it at high body fat
+  const PROTEIN_PER_LEAN_KG = 1.6;
+  const leanKg = (kg) => kg * (1 - bodyFat(kg) / 100);
+  const proteinNeed = (kg) => PROTEIN_PER_LEAN_KG * leanKg(kg);
+  // Within this many grams of what you need counts as on target
+  const PROTEIN_SLACK = 2.5;
   const bmiClass = (b) => (b >= 40 ? 'Obesity class III' : b >= 35 ? 'Obesity class II' : b >= 30 ? 'Obesity class I' : b >= 25 ? 'Overweight' : b >= 18.5 ? 'Healthy weight' : 'Underweight');
 
   /* Energy model. The same three burn formulas are in update_weight.py, which measures calibration.offset from your logged weeks */
@@ -1825,12 +1869,32 @@
   const stepRate = (steps) => LB_PER_KG * 0.57 * 0.00046666666 * steps;
   const cycleRate = (minutes) => (6.8 * 3.5 * minutes) / 200;
   const burnPerKg = (plan) => 10 + stepRate(plan.steps) + cycleRate(plan.cycling);
-  const burnAt = (kg, plan, shift = 0) => burnPerKg(plan) * kg + REST_BASE + W.calibration.offset + shift;
+  const burnAt = (kg, plan, shift = 0) => burnPerKg(plan) * kg + REST_BASE + W.calibration.offset + tefShift(plan) + shift;
   // Burn falls as weight falls, so these habits settle at the weight where burn equals what you eat
-  const settleKg = (plan) => (plan.kcal - REST_BASE - W.calibration.offset) / burnPerKg(plan);
+  const settleKg = (plan) => (plan.kcal - REST_BASE - W.calibration.offset - tefShift(plan)) / burnPerKg(plan);
 
   const weeks = W.weeks;
   const latest = weeks[weeks.length - 1];
+
+  /* Macros. Calories are always 4 per gram of protein and carbs plus 9 per gram of fat */
+  const MACROS = ['protein', 'carbs', 'fat'];
+  const MACRO_KCAL = { protein: 4, carbs: 4, fat: 9 };
+  // Share of each macro's calories spent digesting it (thermic effect of food)
+  const TEF = { protein: 0.25, carbs: 0.075, fat: 0.02, alcohol: 0.15 };
+  const macroKcal = (m) => MACROS.reduce((t, k) => t + m[k] * MACRO_KCAL[k], 0);
+  const tefOf = (m) => MACROS.reduce((t, k) => t + m[k] * MACRO_KCAL[k] * TEF[k], 0);
+  // The calibration already includes what your usual mix costs to digest, so only a different mix moves the burn
+  const BASE_TEF = (() => {
+    let tef = 0, kcal = 0;
+    for (const w of weeks) {
+      const m = w.macros;
+      if (!m || w.change == null || w.days !== 7 || w.repeatedDays || w.steps == null) continue;
+      tef += tefOf(m) + m.alcoholKcal * TEF.alcohol;
+      kcal += macroKcal(m) + m.alcoholKcal;
+    }
+    return kcal ? tef / kcal : 0.1;
+  })();
+  const tefShift = (plan) => (plan.protein == null ? 0 : tefOf(plan) - BASE_TEF * plan.kcal);
   const startDate = toDate(latest.start);
   const MAX_DAYS = 3650;
 
@@ -2246,16 +2310,30 @@
   const UNCERTAINTY = 200;
   const snap = (v, step) => Math.round(v / step) * step;
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
-  const snapPlan = (kcal, steps, cycling) => ({
-    kcal: clamp(snap(kcal, 50), 1500, 4500), steps: clamp(snap(steps, 500), 0, 25000), cycling: clamp(snap(cycling, 5), 0, 120),
-  });
+  const KCAL_RANGE = [1500, 4500];
+  const PROTEIN_NOW = proteinNeed(latest.kg);
+  // Grams of each macro, scaled so they add up to the plan's calories exactly
+  const fitMacros = (kcal, m) => {
+    const f = kcal / macroKcal(m);
+    return Object.fromEntries(MACROS.map((k) => [k, m[k] * f]));
+  };
+  // A plan with no macro data gets enough protein, 30% of calories from fat and the rest from carbs
+  const defaultMacros = (kcal) => {
+    const protein = snap(PROTEIN_NOW, 5), fat = (kcal * 0.3) / 9;
+    return { protein, fat, carbs: Math.max(0, (kcal - protein * 4 - fat * 9) / 4) };
+  };
+  const snapPlan = (kcal, steps, cycling, macros) => {
+    const k = clamp(snap(kcal, 50), ...KCAL_RANGE);
+    return { kcal: k, steps: clamp(snap(steps, 500), 0, 25000), cycling: clamp(snap(cycling, 5), 0, 120),
+      ...fitMacros(k, macros && macroKcal(macros) > 0 ? macros : defaultMacros(k)) };
+  };
   const PRESETS = [
-    { id: 'current', label: 'Current habits', plan: snapPlan(W.habits.kcal, W.habits.steps, W.habits.cycling),
+    { id: 'current', label: 'Current habits', plan: snapPlan(W.habits.kcal, W.habits.steps, W.habits.cycling, W.habits.macros),
       note: () => `your average for the last ${W.habits.days} days` },
-    { id: 'steady', label: 'A steady plan', plan: snapPlan(2200, 10000, 20), note: () => 'an example between your current habits and your best stretch' },
+    { id: 'steady', label: 'A steady plan', plan: snapPlan(2200, 10000, 20), note: () => 'an example between your current habits and your best stretch, with enough protein' },
   ];
   if (W.best) {
-    PRESETS.push({ id: 'best', label: 'Your best stretch', plan: snapPlan(W.best.kcal, W.best.steps, W.best.cycling),
+    PRESETS.push({ id: 'best', label: 'Your best stretch', plan: snapPlan(W.best.kcal, W.best.steps, W.best.cycling, W.best.macros),
       note: () => `what you averaged from ${dayLabel(toDate(W.best.from))} to ${dayLabel(toDate(W.best.to))}, when you lost ${mass(Math.abs(W.best.kg))} in ${Math.round((toDate(W.best.to) - toDate(W.best.from)) / 864e5 + 1) / 7} weeks` });
   }
   let plan = { ...PRESETS[0].plan };
@@ -2269,14 +2347,70 @@
     b.addEventListener('click', () => { plan = { ...p.plan }; presetId = p.id; renderGoals(); });
     $('glPresets').appendChild(b);
   }
-  [['glKcal', 'kcal'], ['glSteps', 'steps'], ['glCycle', 'cycling']].forEach(([id, key]) => {
-    $(id).addEventListener('input', (ev) => {
-      plan = { ...plan, [key]: +ev.target.value };
-      const match = PRESETS.find((p) => ['kcal', 'steps', 'cycling'].every((k) => p.plan[k] === plan[k]));
-      presetId = match ? match.id : null;
-      renderGoals();
-    });
+  /* Calories and macros move together. Calories keep the same mix; a macro either changes calories or, with
+     "Keep calories", takes the difference from the other two in proportion */
+  let macroMode = 'follow';
+  const setKcal = (v) => {
+    const kcal = clamp(v, ...KCAL_RANGE);
+    plan = { ...plan, kcal, ...fitMacros(kcal, plan) };
+  };
+  const setMacro = (key, g) => {
+    const others = MACROS.filter((k) => k !== key);
+    const otherKcal = others.reduce((t, k) => t + plan[k] * MACRO_KCAL[k], 0);
+    const next = { ...plan };
+    if (macroMode === 'follow') {
+      // Stop where calories would leave the calorie slider's range
+      next[key] = clamp(g, Math.max(0, (KCAL_RANGE[0] - otherKcal) / MACRO_KCAL[key]), (KCAL_RANGE[1] - otherKcal) / MACRO_KCAL[key]);
+    } else {
+      const change = Math.min((g - plan[key]) * MACRO_KCAL[key], otherKcal);
+      next[key] = plan[key] + change / MACRO_KCAL[key];
+      for (const k of others) {
+        next[k] = otherKcal > 0 ? plan[k] * (1 - change / otherKcal) : -change / 2 / MACRO_KCAL[k];
+      }
+    }
+    next.kcal = macroKcal(next);
+    plan = next;
+  };
+  const PLAN_KEYS = ['kcal', 'steps', 'cycling', ...MACROS];
+  const onPlanInput = (id, apply) => $(id).addEventListener('input', (ev) => {
+    apply(+ev.target.value);
+    const match = PRESETS.find((p) => PLAN_KEYS.every((k) => Math.round(p.plan[k]) === Math.round(plan[k])));
+    presetId = match ? match.id : null;
+    renderGoals();
   });
+  onPlanInput('glKcal', setKcal);
+  onPlanInput('glSteps', (v) => { plan = { ...plan, steps: v }; });
+  onPlanInput('glCycle', (v) => { plan = { ...plan, cycling: v }; });
+  onPlanInput('glProtein', (v) => setMacro('protein', v));
+  onPlanInput('glCarbs', (v) => setMacro('carbs', v));
+  onPlanInput('glFat', (v) => setMacro('fat', v));
+  $('glMacroMode').addEventListener('click', (ev) => {
+    const b = ev.target.closest('button');
+    if (!b) return;
+    macroMode = b.dataset.mode;
+    [...$('glMacroMode').children].forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  });
+
+  /* How much of the weight lost is fat. Forbes' rule: the leaner you are, the bigger the lean share of a loss.
+     Eating the protein you need is taken to roughly halve that lean share while in a deficit */
+  const FAT_WEEKS = 12;
+  const FORBES_C = 10.4;
+  function fatSplit(path, p) {
+    const protect = clamp((p.protein / PROTEIN_NOW - 0.5) / 0.5, 0, 1);
+    let fat = (latest.kg * bodyFat(latest.kg)) / 100, fatLost = 0;
+    for (let d = 1; d <= FAT_WEEKS * 7; d++) {
+      const lost = path[d - 1] - path[d];
+      let leanShare = FORBES_C / (FORBES_C + fat);
+      if (lost > 0) leanShare *= 1 - 0.5 * protect;
+      fat -= lost * (1 - leanShare);
+      fatLost += lost * (1 - leanShare);
+    }
+    const total = latest.kg - path[FAT_WEEKS * 7];
+    return { total, fat: fatLost, lean: total - fatLost, protect };
+  }
+  const MACRO_COLORS = { protein: 'var(--g1)', carbs: 'var(--g4)', fat: 'var(--g2)' };
+  const MACRO_NAMES = { protein: 'Protein', carbs: 'Carbs', fat: 'Fat' };
+  const gText = (g) => `${int(g)} g`;
 
   let chartPath = [];
   let chartHorizon = 0;
@@ -2347,6 +2481,12 @@
     $('glKcalVal').textContent = `${int(plan.kcal)} kcal`;
     $('glStepsVal').textContent = int(plan.steps);
     $('glCycleVal').textContent = `${plan.cycling} min`;
+    const planKcal = macroKcal(plan);
+    for (const k of MACROS) {
+      const id = 'gl' + MACRO_NAMES[k];
+      $(id).value = Math.round(plan[k]);
+      $(id + 'Val').textContent = `${gText(plan[k])} · ${Math.round((plan[k] * MACRO_KCAL[k] * 100) / planKcal)}%`;
+    }
     [...$('glPresets').children].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.preset === presetId)));
 
     const path = simulate(plan);
@@ -2356,6 +2496,47 @@
     const balance = plan.kcal - burn;
     const perWeek = (balance * 7) / KCAL_PER_KG;
     const settle = settleKg(plan);
+
+    /* Macro block */
+    const need = PROTEIN_NOW;
+    const proteinGap = plan.protein - need;
+    const tef = tefShift(plan);
+    const split = fatSplit(path, plan);
+    $('glMacroSub').textContent = `You need about ${gText(need)} of protein a day: ${PROTEIN_PER_LEAN_KG} g for each kg of lean mass (about ${mass(leanKg(latest.kg))} of you that isn't fat). Calories are 4 per gram of protein and carbs and 9 per gram of fat, so these sliders and the calorie slider move each other. Moving calories keeps the same mix. Moving a macro changes calories, or with Keep calories, takes the difference out of the other two.`;
+    const bar = $('glMacroBar');
+    bar.replaceChildren();
+    const keyEl = $('glMacroKey');
+    keyEl.replaceChildren();
+    for (const k of MACROS) {
+      const kcal = plan[k] * MACRO_KCAL[k];
+      const pct = Math.round((kcal * 100) / planKcal);
+      const i = document.createElement('i');
+      i.style.width = `${(kcal / planKcal) * 100}%`;
+      i.style.background = MACRO_COLORS[k];
+      i.title = `${MACRO_NAMES[k]}: ${kcalText(kcal)} (${pct}%)`;
+      bar.appendChild(i);
+      const sp = document.createElement('span');
+      const sw = document.createElement('i');
+      sw.style.background = MACRO_COLORS[k];
+      sp.append(sw, `${MACRO_NAMES[k]} ${kcalText(kcal)} (${pct}%)`);
+      keyEl.appendChild(sp);
+    }
+    bar.setAttribute('aria-label', `Calories by macro: ${MACROS.map((k) => `${MACRO_NAMES[k]} ${Math.round((plan[k] * MACRO_KCAL[k] * 100) / planKcal)}%`).join(', ')}`);
+    const short = proteinGap < -PROTEIN_SLACK, over = proteinGap > PROTEIN_SLACK;
+    const lostKg = split.total;
+    const macroBal = $('glMacroBalance');
+    macroBal.replaceChildren();
+    for (const [v, l] of [
+      [short ? `−${gText(-proteinGap)}` : over ? `+${gText(proteinGap)}` : 'On target', short ? `protein deficit: ${gText(plan.protein)} of ${gText(need)} needed` : over ? `protein surplus: ${gText(plan.protein)} vs ${gText(need)} needed` : `${gText(plan.protein)} of protein, what you need`],
+      [Math.abs(tef) < 5 ? 'About the same' : `${tef > 0 ? '+' : '−'}${kcalText(Math.abs(tef))}`, Math.abs(tef) < 5 ? 'calories spent digesting, vs your usual mix' : `${tef > 0 ? 'more' : 'fewer'} calories a day spent digesting than your usual mix`],
+      lostKg > 0.05 ? [mass(split.fat), `of fat lost in the first ${FAT_WEEKS} weeks, out of ${mass(lostKg)} in all`] : [lostKg < -0.05 ? `+${massNum(-lostKg)} ${unit}` : 'No change', `in the first ${FAT_WEEKS} weeks, so no fat is lost`],
+    ]) {
+      const d = document.createElement('div');
+      const b = document.createElement('b');
+      b.textContent = v;
+      d.append(b, l);
+      macroBal.appendChild(d);
+    }
 
     const bal = $('glBalance');
     bal.replaceChildren();
@@ -2377,6 +2558,9 @@
     } else {
       verdict = `${intro}These numbers lose about ${mass(-perWeek)} a week at first, then slow down as a lighter body burns less. Kept up forever, they level off near ${mass(settle)}.`;
       if (-perWeek > latest.kg * 0.01) verdict += ' That first pace is above 1% of your body weight a week, which is hard to keep up for long.';
+      verdict += short
+        ? ` Protein is ${gText(-proteinGap)} a day under what you need, so about ${mass(split.lean)} of the first ${FAT_WEEKS} weeks' loss is likely to be muscle and other lean tissue rather than fat.`
+        : ` Protein covers what you need, which helps hold on to muscle: about ${mass(split.fat)} of the first ${FAT_WEEKS} weeks' ${mass(lostKg)} should be fat.`;
     }
     $('glVerdict').textContent = verdict;
 
@@ -2409,7 +2593,7 @@
         card.appendChild(el);
       };
       card.append(label, val);
-      const hold = burnPerKg(plan) * g + REST_BASE + W.calibration.offset;
+      const hold = burnPerKg(plan) * g + REST_BASE + W.calibration.offset + tef;
       const stats = `BMI ${bmiOf(g).toFixed(1)} · about ${Math.round(bodyFat(g))}% body fat`;
       if (latest.kg <= g) {
         val.textContent = 'Reached';
@@ -2554,6 +2738,9 @@
     { title: 'What you burn', body: `starts from the formulas already in your sheet: Mifflin-St Jeor at rest (age ${AGE}, male, ${HEIGHT_CM} cm), your step formula and your cycling formula. As you lose weight, all three drop, which is why progress slows. The daily surplus or deficit becomes weight at 7,700 kcal per kg.` },
     { title: 'Calibration to your scale.', body: `Those formulas alone don't match how your weight actually moved. On the ${W.calibration.weeks} weeks with real daily logs, the gap averages ${offset < 0 ? '−' : '+'}${int(Math.abs(offset))} kcal a day, so every burn figure here includes it. It may be burn that's lower than the formulas say, calories that are higher than logged, or both.${check ? ` As a test, fitting only on the earlier logs predicted ${signedMass(check.predicted)} for the ${check.weeks} weeks from ${dayLabel(toDate(check.from))}. The scale showed ${signedMass(check.actual)}.` : ''}` },
     { title: 'Estimated weeks are left out of that calibration.', body: `${W.repeats.days} of ${W.repeats.of} logged days repeat one calorie total for 5 or more days. The scale doesn't support those totals, so they're charted but not used to fit the model.` },
+    { title: 'Protein you need', body: `is ${PROTEIN_PER_LEAN_KG} g a day for each kg of lean mass, the weight that isn't body fat (estimated below). That's the usual target for keeping muscle while losing fat; 1.2 to 2.2 g is the common range. Going by total body weight would ask for far more at a high body fat. Today that's about ${gText(PROTEIN_NOW)} a day, and it barely moves as you lose fat, because your lean mass stays about the same.` },
+    { title: 'Macros change the burn a little.', body: `Your body spends about 25% of protein's calories digesting it, 7.5% of carbs' and 2% of fat's. Your logged weeks averaged ${(BASE_TEF * 100).toFixed(1)}% of calories spent this way, and the calibration already includes that, so only a mix different from your usual one moves the burn.` },
+    { title: 'Fat versus lean.', body: `Not all weight lost is fat. Forbes' rule estimates the lean share from how much fat you carry: about ${Math.round((FORBES_C / (FORBES_C + (latest.kg * bodyFat(latest.kg)) / 100)) * 100)}% for you today, rising as you get leaner. Eating the protein you need is taken to roughly halve that share during a deficit, in line with studies of higher-protein diets. Lifting weights helps too and isn't counted here.` },
     { title: 'Dates are estimates.', body: `Each range assumes your true burn could be ${UNCERTAINTY} kcal a day either way. It also assumes you hold the same habits for the whole trip and stay ${AGE}. A real plan would adjust along the way.` },
     { title: 'Body fat is estimated, not measured.', body: 'It uses the CUN-BAE equation from BMI, age and sex, which has an error of about 4.7 points and assumes a typical build. A DEXA scan would give you a real number. BMI also ignores muscle.' },
     { title: 'Not medical advice.', body: 'These are projections from a spreadsheet. A doctor or dietitian can check a plan against your health, especially for a big or fast change.' },
@@ -2583,6 +2770,7 @@
     return { kg, rest, walk, cycle, burn, deficit, logged, kind };
   }
   const kcalText = (v) => `${int(v)} kcal`;
+  const proteinOf = (d) => d.foods.reduce((t, [name, kcal]) => t + grams(name, kcal, 'protein'), 0);
   const stepsFor = (kcal, kg) => kcal / (kg * stepRate(1));
   const minutesFor = (kcal, kg) => kcal / (kg * cycleRate(1));
 
@@ -2612,7 +2800,7 @@
       ` you ate ${kcalText(over)} more than you burned. Breaking even would have taken about ${int(Math.ceil(stepsFor(over, b.kg) / 100) * 100)} more steps or ${int(Math.ceil(minutesFor(over, b.kg) / 5) * 5)} more minutes of cycling.`]];
   }
 
-  function meterRow(label, segs, total, max, marker) {
+  function meterRow(label, segs, total, max, marker, fmt = kcalText, markerLabel = 'Eaten') {
     const frag = document.createDocumentFragment();
     const name = document.createElement('span');
     name.textContent = label;
@@ -2623,18 +2811,20 @@
       const i = document.createElement('i');
       i.style.width = `${(sg.v / max) * 100}%`;
       i.style.background = sg.color;
-      i.title = `${sg.label}: ${kcalText(sg.v)}`;
+      i.title = `${sg.label}: ${fmt(sg.v)}`;
       bar.appendChild(i);
     }
     if (marker != null) {
       const ln = document.createElement('span');
       ln.className = 'line';
       ln.style.left = `calc(${Math.min(100, (marker / max) * 100)}% - 1px)`;
-      ln.title = `Eaten: ${kcalText(marker)}`;
+      ln.title = `${markerLabel}: ${fmt(marker)}`;
       bar.appendChild(ln);
     }
     const val = document.createElement('b');
-    val.textContent = kcalText(total);
+    if (typeof total === 'string') val.textContent = total;
+    else if (total instanceof Node) val.appendChild(total);
+    else val.textContent = fmt(total);
     frag.append(name, bar, val);
     return frag;
   }
@@ -2662,6 +2852,59 @@
     return wrap;
   }
 
+  function renderProtein(list, w) {
+    const box = $('wkProtein');
+    box.replaceChildren();
+    const logged = list.filter((x) => x.b.logged);
+    const max = Math.max(...list.map((x) => Math.max(x.p.eaten, x.p.need)), 1) * 1.05;
+    for (const { d, b, p } of list) {
+      const date = toDate(d.date);
+      let total = 'Not logged';
+      if (b.logged) {
+        total = document.createDocumentFragment();
+        const gap = document.createElement('span');
+        const near = Math.abs(p.gap) <= PROTEIN_SLACK;
+        gap.className = near || p.gap > 0 ? 'over' : 'short';
+        gap.textContent = near ? 'on target' : p.gap > 0 ? `+${int(p.gap)} g` : `−${int(-p.gap)} g`;
+        total.append(`${int(p.eaten)} of ${int(p.need)} g · `, gap);
+      }
+      box.append(meterRow(`${DAY_NAMES[date.getDay()].slice(0, 3)} ${date.getDate()}`,
+        [{ label: 'Protein eaten', v: p.eaten, color: p.gap >= -PROTEIN_SLACK ? 'var(--g3)' : 'var(--g2)' }],
+        total, max, p.need, (v) => `${int(v)} g`, 'Needed'));
+    }
+    const key = $('wkProteinKey');
+    key.replaceChildren();
+    for (const [label, css] of [['Enough', 'background: var(--g3)'], ['Short', 'background: var(--g2)'], ['what you need', 'width: 2px; height: 12px; border-radius: 0; background: var(--text); opacity: 0.7']]) {
+      const sp = document.createElement('span');
+      const i = document.createElement('i');
+      i.style.cssText = css;
+      sp.append(i, label);
+      key.appendChild(sp);
+    }
+    const need0 = list.length ? list[0].p.need : proteinNeed(w.kg);
+    $('wkProteinSub').textContent = `Protein from each food's macro split, against what you need: ${PROTEIN_PER_LEAN_KG} g for each kg of lean mass (your weight minus estimated body fat), about ${int(need0)} g a day at ${mass(w.kg)}.`;
+
+    const v = $('wkProteinVerdict');
+    v.replaceChildren();
+    if (!logged.length) { v.textContent = 'No food logged this week yet.'; return; }
+    const eaten = logged.reduce((t, x) => t + x.p.eaten, 0);
+    const need = logged.reduce((t, x) => t + x.p.need, 0);
+    const net = eaten - need;
+    const hit = logged.filter((x) => x.p.gap >= -PROTEIN_SLACK).length;
+    const sources = {};
+    for (const x of logged) for (const [name, kcal] of x.d.foods) sources[name] = (sources[name] || 0) + grams(name, kcal, 'protein');
+    const top = Object.entries(sources).filter(([, g]) => g >= 1).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    const n = logged.length;
+    const strong = document.createElement('b');
+    strong.textContent = Math.abs(net / n) <= PROTEIN_SLACK ? 'Protein on target.'
+      : net < 0 ? `Protein deficit of ${int(-net / n)} g a day.` : `Protein surplus of ${int(net / n)} g a day.`;
+    v.append(strong, ` You averaged ${int(eaten / n)} g against about ${int(need / n)} g needed` +
+      (Math.abs(net / n) > PROTEIN_SLACK ? `, ${int(Math.abs(net))} g ${net < 0 ? 'short' : 'over'} across ${n} logged day${n === 1 ? '' : 's'}` : '') +
+      `, and had enough on ${hit} of ${n}.` +
+      (top.length ? ` Most came from ${top.map(([name, g]) => `${name} (${int(g)} g)`).join(', ').replace(/, ([^,]*)$/, ' and $1')}.` : '') +
+      (net < 0 ? ' Short protein in a calorie deficit means more of what you lose comes from muscle.' : ''));
+  }
+
   function renderWeekPage(start) {
     const idx = weeks.findIndex((w) => w.start === start);
     const days = $('wkDays');
@@ -2673,6 +2916,8 @@
       $('wkLede').textContent = 'Each week starts on a Sunday weigh-in. Go back to the weight tab and pick a week from the calorie chart.';
       $('wkPrev').disabled = $('wkNext').disabled = true;
       $('wkNotes').replaceChildren();
+      ['wkProtein', 'wkProteinKey', 'wkProteinVerdict'].forEach((id) => $(id).replaceChildren());
+      $('wkProteinSub').textContent = '';
       return;
     }
     const w = weeks[idx];
@@ -2690,7 +2935,11 @@
     $('wkPrev').disabled = idx === 0;
     $('wkNext').disabled = idx === weeks.length - 1;
 
-    const list = w.daily.map((d) => ({ d, b: balanceOf(w, Math.round((toDate(d.date) - start0) / 864e5), d) }));
+    const list = w.daily.map((d) => {
+      const b = balanceOf(w, Math.round((toDate(d.date) - start0) / 864e5), d);
+      const eatenG = proteinOf(d);
+      return { d, b, p: { eaten: eatenG, need: proteinNeed(b.kg), gap: eatenG - proteinNeed(b.kg) } };
+    });
     const logged = list.filter((x) => x.b.logged);
     const eaten = logged.reduce((t, x) => t + x.d.kcal, 0);
     const netWeek = logged.reduce((t, x) => t + x.b.deficit, 0);
@@ -2707,8 +2956,10 @@
         sub: movedDays.length ? `Walking and cycling made the difference on ${movedDays.length} of them` : deficitDays.length ? 'Each was below your resting burn without help' : 'Walking and cycling never covered what you ate' },
     ]);
 
+    renderProtein(list, w);
+
     const max = Math.max(...list.map((x) => Math.max(x.b.burn, x.d.kcal)), 1);
-    for (const { d, b } of list) {
+    for (const { d, b, p } of list) {
       const date = toDate(d.date);
       const card = document.createElement('section');
       card.className = 'card tr-card wk-day';
@@ -2728,7 +2979,18 @@
       const badge = document.createElement('span');
       badge.className = 'wk-badge ' + (b.kind === 'none' ? 'none' : b.deficit >= 0 ? 'good' : 'bad');
       badge.textContent = b.kind === 'none' ? 'Not logged' : b.deficit >= 0 ? `Deficit ${kcalText(b.deficit)}` : `Surplus ${kcalText(-b.deficit)}`;
-      head.append(left, badge);
+      const badges = document.createElement('div');
+      badges.className = 'wk-badges';
+      badges.appendChild(badge);
+      if (b.logged) {
+        const pb = document.createElement('span');
+        const ok = p.gap >= -PROTEIN_SLACK;
+        pb.className = 'wk-badge ' + (ok ? 'good' : 'bad');
+        pb.textContent = Math.abs(p.gap) <= PROTEIN_SLACK ? `Protein on target` : `Protein ${p.gap > 0 ? '+' : '−'}${int(Math.abs(p.gap))} g`;
+        pb.title = `${int(p.eaten)} g of protein eaten, about ${int(p.need)} g needed`;
+        badges.appendChild(pb);
+      }
+      head.append(left, badges);
       card.appendChild(head);
 
       const meters = document.createElement('div');
@@ -2796,6 +3058,7 @@
       ['Walking and cycling created the deficit', ' when what you ate was above your resting burn but below rest plus walking plus cycling. Without the movement, that day would have been a surplus.'],
       ['Time to process', " is roughly how long a typical serving takes to digest. Sugary drinks and fruit pass in under an hour, rice and eggs in about 2 hours, and fat, fried food, red meat and big mixed meals like biryani take 4 to 5. For alcohol it's the time the liver takes to clear one drink. These are typical values, not measurements, and a big meal takes longer than a small one."],
       ['Macros', ' use the same split for each food as the calorie chart on the weight tab.'],
+      ['Protein needed', ` is ${PROTEIN_PER_LEAN_KG} g for each kg of lean mass, worked out at that day's weight with the same body fat estimate as the goal dates tab. It's the usual target for keeping muscle while losing fat (1.2 to 2.2 g is the common range). A protein deficit means you ate less than that, a surplus more.`],
     ];
     if (gap != null && Math.abs(gap) >= 50) {
       notes.push(["Your sheet's DEFICIT column", ` comes out about ${kcalText(Math.abs(gap))} a day ${gap > 0 ? 'more generous' : 'less generous'} than this page for this week. The sheet adds a flat workout burn and isn't adjusted to how your scale actually moved, so this page's numbers are the ones the goal dates use.`]);

@@ -76,6 +76,7 @@ FOOD_MACROS = {
     "Zero Sugar": (100, 0, 0, 0, 0.5),
     "Red Bull Small": (100, 0, 0, 0, 0.5),
     "French Toast": (44, 14, 42, 0, 3),
+    "Bread-Cheese": (47, 18, 35, 0, 2.5),
     "Grapes": (94, 4, 2, 0, 0.5),
     "Rice": (90, 8, 2, 0, 2),
     "Non Veg Thaali": (45, 20, 35, 0, 4.5),
@@ -293,7 +294,8 @@ def best_stretch(weeks, days):
     end = start + timedelta(days=7 * BEST_STRETCH_WEEKS)
     avg = averages([x for x in days if start <= x["date"] < end])
     change = sum(w["change"] for w in run)
-    return {**avg, "from": start.isoformat(), "to": (end - timedelta(days=1)).isoformat(),
+    span = [x for x in days if start <= x["date"] < end]
+    return {**avg, "macros": average_macros(span), "from": start.isoformat(), "to": (end - timedelta(days=1)).isoformat(),
             "kg": round(change, 1), "perWeek": round(change / BEST_STRETCH_WEEKS, 2)}
 
 
@@ -314,7 +316,8 @@ def build(text):
         "asOf": days[-1]["date"].isoformat(),
         "weeks": weeks,
         "calibration": calibrate(weeks),
-        "habits": {**averages(recent), "from": recent[0]["date"].isoformat(), "days": len(recent)},
+        "habits": {**averages(recent), "macros": average_macros(recent), "from": recent[0]["date"].isoformat(),
+                   "days": len(recent)},
         "best": best_stretch(weeks, days),
         "trend": {"kgPerWeek": round(slope, 2), "weeks": len(trend)},
         "repeats": {"days": len(repeats), "of": len(days)},
